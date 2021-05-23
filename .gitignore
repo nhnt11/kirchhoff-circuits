@@ -127,3 +127,23 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# prevent weird log files
+.*.log
+.*.db
+.*.db-wal
+.*.db-shm
+
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# code output
+*.npy
+*.pdf
+*.png
+*.pgf
