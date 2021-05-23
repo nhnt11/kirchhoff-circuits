@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-05-23T23:17:02+02:00
+# @Last modified time: 2021-05-23T23:55:42+02:00
 # @License: MIT
 
 import random as rd
@@ -11,10 +11,10 @@ import networkx as nx
 import numpy as np
 import sys
 import pandas as pd
-# import kirchhoff_flow
-from kirchhoff.kirchhoff_flow import *
-import init_crystal
-import init_random
+
+from kirchhoff.circuit_flow import *
+import kirchhoff.init_crystal as init_crystal
+import kirchhoff.init_random as init_random
 
 def initialize_flux_circuit_from_networkx(input_graph):
 

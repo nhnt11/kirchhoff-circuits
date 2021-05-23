@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-05-23T23:17:43+02:00
+# @Last modified time: 2021-05-23T23:55:51+02:00
 # @License: MIT
 
 import networkx as nx
@@ -11,11 +11,10 @@ import numpy as np
 import scipy.linalg as lina
 import sys
 
-from kirchhoff.kirchhoff_init import *
-from kirchhoff.kirchhoff_flow import *
-from kirchhoff.kirchhoff_flux import *
-
-import kirchhoff.init_dual
+from kirchhoff.circuit_init import *
+from kirchhoff.circuit_flow import *
+from kirchhoff.circuit_flux import *
+import kirchhoff.init_dual as init_dual
 
 def initialize_dual_circuit_from_networkx(input_graph1,input_graph2,e_adj):
 

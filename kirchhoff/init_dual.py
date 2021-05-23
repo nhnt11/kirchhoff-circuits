@@ -3,13 +3,14 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-05-23T23:17:55+02:00
+# @Last modified time: 2021-05-24T00:03:20+02:00
 # @License: MIT
 
 import networkx as nx
 import numpy as np
 import kirchhoff.init_crystal
 from scipy.spatial import Voronoi
+import kirchhoff.init_crystal  as init_crystal
 
 def init_dual_minsurf_graphs(dual_type,num_periods):
 
