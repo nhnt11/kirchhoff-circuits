@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-05-23T23:56:10+02:00
+# @Last modified time: 2021-06-13T00:35:59+02:00
 # @License: MIT
 
 import random as rd
@@ -310,5 +310,5 @@ class flow_circuit(circuit,object):
                 self.edges['conductivity'][j]=c
         else:
 
-            print('Warning, custom source values ill defined, setting default !')
+            print('Warning, custom conductance values ill defined, setting default !')
             self.init_plexus_default()
