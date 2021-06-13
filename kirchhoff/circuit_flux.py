@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-06-13T00:41:12+02:00
+# @Last modified time: 2021-06-13T17:04:25+02:00
 # @License: MIT
 
 import random as rd
@@ -42,12 +42,18 @@ def initialize_flux_circuit_from_crystal(crystal_type='default',periods=1):
 def setup_default_flux_circuit(dict_pars):
 
     kirchhoff_graph=initialize_flux_circuit_from_networkx(dict_pars['plexus'])
+    kirchhoff_graph.set_source_landscape(mode='dipole_border')
     kirchhoff_graph.set_solute_landscape()
 
-    self.scales['diffusion']=dict_pars['diffusion']
-    self.scales['absorption']=dict_pars['absorption']
-    idx=np.where(self.nodes['solute'] > 0.)
-    self.scales['sum_flux']=np.sum(self.nodes['solute'][idx])
+    kirchhoff_graph.scales['diffusion']=dict_pars['diffusion']
+    kirchhoff_graph.scales['absorption']=dict_pars['absorption']
+    kirchhoff_graph.set_absorption_landscape()
+    kirchhoff_graph.set_geom_landscape()
+
+    idx=np.where(kirchhoff_graph.nodes['solute'] > 0.)[0]
+    kirchhoff_graph.scales['sum_flux']=np.sum(kirchhoff_graph.nodes['solute'][idx])
+
+    return kirchhoff_graph
 
 class flux_circuit(flow_circuit,object):
 
@@ -82,7 +88,7 @@ class flux_circuit(flow_circuit,object):
         self.absorption_mode={
 
             'default':self.init_absorption_default,
-            'random':self.init_absorption_rand,
+            'random':self.init_absorption_random,
             'custom':self.init_absorption_custom
         }
 
@@ -188,7 +194,7 @@ class flux_circuit(flow_circuit,object):
     def set_geom_landscape(self, mode='default', **kwargs):
 
         # optional keywords
-        if geom' in kwargs:
+        if 'geom' in kwargs:
             self.custom= kwargs['geom']
 
         # call init sources
