@@ -256,6 +256,6 @@ class circuit:
     # output
     def plot_circuit(self):
 
-        fig=dx.plot_networkx(self.G)
+        fig=dx.plot_networkx(self.G,conductivity=self.edges['conductivity'],flow_rate=self.edges['flow_rate'] )
 
         return fig

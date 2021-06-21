@@ -9,6 +9,7 @@
 # standard types
 import networkx as nx
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 
 #generate interactive plots with plotly and return the respective figures
@@ -19,12 +20,17 @@ def plot_networkx(input_graph,**kwargs):
         'color_nodes':['#a845b5'],
         'color_edges':['#c762d4']
     }
+    extra_data=pd.DataFrame()
+
     for k,v in kwargs.items():
+
         if k in options:
             options[k]=v
-
+        else:
+            extra_data[k]=v
+    print(extra_data)
     fig = go.Figure()
-    plot_nodes_edges(fig,options,input_graph)
+    plot_graph_components(fig,options,input_graph,extra_data)
     fig.update_layout(showlegend=False)
 
     return fig
@@ -36,6 +42,7 @@ def plot_networkx_dual(dual_graph,**kwargs):
         'color_nodes':['#6aa84f','#a845b5'],
         'color_edges':['#2BDF94','#c762d4']
     }
+
     for k,v in kwargs.items():
         if k in options:
             options[k]=v
@@ -43,7 +50,7 @@ def plot_networkx_dual(dual_graph,**kwargs):
     fig = go.Figure()
     for i,K in enumerate(dual_graph.layer):
         options['network_id']=i
-        plot_nodes_edges(fig,options,K.G)
+        plot_graph_components(fig,options,K.G)
     fig.update_layout(showlegend=False)
 
     return fig
@@ -70,24 +77,34 @@ def get_edge_coords(input_graph,options):
 
     return edge_xyz
 
-def get_edge_scatter(edge_xyz,options):
+def get_edge_scatter(edge_xyz,extra_data,options):
+
+    mode='none'
+    hover=''
+
+    if len(extra_data.keys())!=0:
+        mode='text'
+        data=[ list(extra_data[c]) for c in extra_data.columns]
+        hover=[create_tag(vals,extra_data.columns ) for vals in list(zip(*data))]
 
     if options['dim']==3:
         edge_trace = go.Scatter3d(
             x=edge_xyz[0], y=edge_xyz[1],z=edge_xyz[2],
             line=dict(width=5, color=options['color']),
-            hoverinfo='none',
+            hoverinfo=mode,
+            hovertext=hover,
             mode='lines')
     else:
         edge_trace = go.Scatter(
             x=edge_xyz[0], y=edge_xyz[1],
             line=dict(width=5, color=options['color']),
-            hoverinfo='none',
+            hoverinfo=mode,
+            hovertext=hover,
             mode='lines')
 
     return edge_trace
 
-def get_edge_trace(input_graph, **kwargs):
+def get_edge_trace(input_graph,extra_data, **kwargs):
 
     options={
         'color':'#888',
@@ -98,7 +115,7 @@ def get_edge_trace(input_graph, **kwargs):
             options[k]=v
 
     edge_xyz=get_edge_coords(input_graph,options)
-    edge_trace=get_edge_scatter(edge_xyz,options)
+    edge_trace=get_edge_scatter(edge_xyz,extra_data,options)
 
     return edge_trace
 
@@ -119,7 +136,7 @@ def get_node_coords(input_graph,options):
 
     return node_xyz
 
-def get_node_scatter(node_xyz,options):
+def get_node_scatter(node_xyz,extra_data,options):
 
     if options['dim']==3:
         node_trace = go.Scatter3d(
@@ -144,7 +161,7 @@ def get_node_scatter(node_xyz,options):
 
     return node_trace
 
-def get_node_trace(input_graph,**kwargs):
+def get_node_trace(input_graph,extra_data,**kwargs):
 
     options={
         'color':'#888',
@@ -156,15 +173,22 @@ def get_node_trace(input_graph,**kwargs):
 
     node_xyz=get_node_coords(input_graph,options)
 
-    node_trace = get_node_scatter(node_xyz,options)
+    node_trace = get_node_scatter(node_xyz,extra_data,options)
 
     return node_trace
 
+def create_tag(vals,columns):
+
+    tag=f''
+    for i,c in enumerate(columns):
+        tag+=str(c)+': '+str(vals[i])+'<br>'
+
+    return tag
 # integrate traces into the figure
-def plot_nodes_edges(fig,options,input_graph):
+def plot_graph_components(fig,options,input_graph,extra_data):
 
     idx=options['network_id']
-    edge_trace=(get_edge_trace(input_graph,color=options['color_edges'][idx]))
-    node_trace=(get_node_trace(input_graph,color=options['color_nodes'][idx]))
+    edge_trace=(get_edge_trace(input_graph,extra_data,color=options['color_edges'][idx]))
+    node_trace=(get_node_trace(input_graph,extra_data,color=options['color_nodes'][idx]))
     fig.add_trace( edge_trace)
     fig.add_trace( node_trace)
