@@ -12,7 +12,19 @@ import numpy as np
 # construct a non-trivial, periodic 3d embedding
 def init_graph_from_crystal(crystal_type,periods):
 
-    choose_constructor_option={ 'default': networkx_simple, 'simple': networkx_simple, 'chain': networkx_chain,'bcc': networkx_bcc,'fcc': networkx_fcc,'diamond': networkx_diamond,'laves':networkx_laves}
+    choose_constructor_option={
+        'default': networkx_simple,
+        'simple': networkx_simple,
+        'chain': networkx_chain,
+        'bcc': networkx_bcc,
+        'fcc': networkx_fcc,
+        'diamond': networkx_diamond,
+        'laves':networkx_laves,
+        'trigonal_stack': networkx_trigonal_stack,
+        'square': networkx_square,
+        'hexagonal':networkx_hexagonal,
+        'trigonal_planar':networkx_trigonal_planar
+        }
 
     if crystal_type in choose_constructor_option:
             crystal=choose_constructor_option[crystal_type](periods)
@@ -394,6 +406,7 @@ class networkx_hexagonal(networkx_crystal,object):
         def __init__(self,tiling_factor,periodic=False):
             super(networkx_hexagonal,self).__init__()
             self.hexagonal_grid(tiling_factor,periodic)
+
         def hexagonal_grid(self, *args):
 
             tiling_factor,periodic_bool=args

@@ -11,10 +11,16 @@ import numpy as np
 import scipy.linalg as lina
 import sys
 
+# custom embeddings/architectures for mono networkx
 from kirchhoff.circuit_init import *
 from kirchhoff.circuit_flow import *
 from kirchhoff.circuit_flux import *
+
+# custom primer
 import kirchhoff.init_dual as init_dual
+
+# custom output functions
+import kirchhoff.draw_networkx as dx
 
 def initialize_dual_circuit_from_networkx(input_graph1,input_graph2,e_adj):
 
@@ -119,3 +125,11 @@ class dual_circuit():
     def clipp_graph(self):
         for i in range(2):
             self.layer[i].clipp_graph()
+
+
+    # output
+    def plot_circuit(self):
+
+        fig=dx.plot_networkx_dual(self)
+
+        return fig

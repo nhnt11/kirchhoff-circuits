@@ -13,8 +13,10 @@ import pandas as pd
 import sys
 
 # custom embeddings/architectures
-import kirchhoff.init_crystal
-import kirchhoff.init_random
+import kirchhoff.init_crystal as init_crystal
+import kirchhoff.init_random as init_random
+# custom output functions
+import kirchhoff.draw_networkx as dx
 
 def initialize_circuit_from_networkx(input_graph):
 
@@ -22,7 +24,6 @@ def initialize_circuit_from_networkx(input_graph):
     kirchhoff_graph.default_init(input_graph)
 
     return kirchhoff_graph
-
 
 def initialize_circuit_from_crystal(crystal_type='default',periods=1):
 
@@ -251,3 +252,10 @@ class circuit:
     def set_graph_pars(self, new_parameters):
 
         self.graph=new_parameters
+
+    # output
+    def plot_circuit(self):
+
+        fig=dx.plot_networkx(self.G)
+
+        return fig
