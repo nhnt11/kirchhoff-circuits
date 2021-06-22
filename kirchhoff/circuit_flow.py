@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-06-13T00:35:59+02:00
+# @Last modified time: 2021-06-22T23:55:48+02:00
 # @License: MIT
 
 import random as rd
@@ -38,6 +38,14 @@ def initialize_flow_circuit_from_random(random_type='default',periods=10,sidelen
     kirchhoff_graph=flow_circuit()
     input_graph=init_random.init_graph_from_random(random_type,periods,sidelength)
     kirchhoff_graph.default_init(input_graph)
+
+    return kirchhoff_graph
+
+def setup_default_flow_circuit(dict_pars):
+
+    kirchhoff_graph=initialize_flow_circuit_from_networkx(dict_pars['plexus'])
+    kirchhoff_graph.set_source_landscape()
+    kirchhoff_graph.set_plexus_landscape()
 
     return kirchhoff_graph
 # class flow_circuit(kirchhoff_init.circuit,object):
@@ -312,3 +320,26 @@ class flow_circuit(circuit,object):
 
             print('Warning, custom conductance values ill defined, setting default !')
             self.init_plexus_default()
+
+    # output
+    def get_nodes_data(self):
+
+        dn=pd.DataFrame(self.nodes['source'])
+
+        return dn
+
+    def get_edges_data(self):
+
+        de=pd.DataFrame(self.edges[['conductivity','flow_rate']])
+        de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)
+
+        return de
+
+    def plot_circuit(self):
+
+        E=self.get_edges_data()
+        V=self.get_nodes_data()
+
+        fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes, edge_data=E,  node_data=V )
+
+        return fig

@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-06-13T17:04:25+02:00
+# @Last modified time: 2021-06-22T23:58:29+02:00
 # @License: MIT
 
 import random as rd
@@ -226,3 +226,17 @@ class flux_circuit(flow_circuit,object):
 
             print('Warning, custom absorption values ill defined, setting default !')
             self.init_geom_default()
+
+
+    def get_nodes_data(self):
+
+        dn=pd.DataFrame(self.nodes[['source','solute','concentration']])
+
+        return dn
+
+    def get_edges_data(self):
+
+        de=pd.DataFrame(self.edges[['conductivity','flow_rate','absorption','peclet','length']])
+        de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)
+
+        return de

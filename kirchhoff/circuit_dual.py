@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-05-23T23:55:51+02:00
+# @Last modified time: 2021-06-22T23:01:04+02:00
 # @License: MIT
 
 import networkx as nx
