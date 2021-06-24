@@ -27,12 +27,12 @@ def plot_networkx(input_graph,**kwargs):
 
         if k in options:
             options[k]=v
-        if 'node_data' in kwargs:
-            for sk,sv in kwargs['node_data'].items():
-                node_data[sk]=sv.to_numpy()
-        if 'edge_data' in kwargs:
-            for sk,sv in kwargs['edge_data'].items():
-                edge_data[sk]=sv.to_numpy()
+    if 'node_data' in kwargs:
+        for sk,sv in kwargs['node_data'].items():
+            node_data[sk]=sv.to_numpy()
+    if 'edge_data' in kwargs:
+        for sk,sv in kwargs['edge_data'].items():
+            edge_data[sk]=sv.to_numpy()
 
     fig = go.Figure()
     add_traces_nodes(fig,options,input_graph,node_data)

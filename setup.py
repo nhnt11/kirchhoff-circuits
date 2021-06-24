@@ -6,8 +6,6 @@
 # @Last modified time: 2021-05-24T00:03:32+02:00
 # @License: MIT
 
-
-
 import setuptools
 
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -15,10 +13,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="kirchhoff", # Replace with your own username
-    version="0.1.0",
+    version="0.1.1",
     author="felixk1990",
     author_email="felixuwekramer@protonmail.com",
-    description="Collecton of routines for creation and manipulation of Kirchhoff circuits based on resistor-only networks, together with 2D/3D spatial embeddings. ",
+    description="Collection of routines for creation and manipulation of Kirchhoff circuits based on resistor-only networks, together with 2D/3D spatial embeddings. ",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/felixk1990/kirchhoff-circuit",

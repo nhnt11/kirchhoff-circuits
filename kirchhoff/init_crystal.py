@@ -8,7 +8,6 @@
 import networkx as nx
 import numpy as np
 
-# not finalized! todo: implement peridoc cell definition
 # construct a non-trivial, periodic 3d embedding
 def init_graph_from_crystal(crystal_type,periods):
 
