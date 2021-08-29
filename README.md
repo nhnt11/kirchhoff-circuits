@@ -1,4 +1,4 @@
-# kirchhoff-circuit
+# kirchhoff
 
 ##  Introduction
 
