@@ -1,2 +1,15 @@
-# kirchhoff-circuits
-Collection of routines for creation and manipulation of Kirchhoff circuits based on resistor-only networks, together with 2D/3D spatial embeddings.
+# kirchhoff
+
+##  Introduction
+
+##  Installation
+pip install kirchhoff
+
+##  Usage
+./notebook contains examples to play with in the form of jupyter notebooks
+##  Requirements
+``` pandas ```,``` networkx ```, ``` numpy ```
+##  Gallery
+
+## Acknowledgement
+```kirchhoff``` written by Felix Kramer
