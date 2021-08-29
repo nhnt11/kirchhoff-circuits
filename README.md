@@ -24,7 +24,7 @@ Single and dual networks are supported at the moment, and can be constructed fro
 -  random voronoi tesselation, initialize_circuit_from_random(random_type='default',periods=10,sidelength=1):  'default': planar voronoi tesselation with periodic boundaries,  'voronoi_volume': 3D voronoi tesselation with periodic boundaries
 -   intertwined systems, initialize_dual_circuit_from_minsurf(dual_type='simple',num_periods=2): supporting most of the above in 3D
       
-
+Further one can define 'flow' and 'flux' circuits for hydrodynamic simulations which are based on Hagen-Poiseuille flow and transport of solutes via advection-diffusion. Doing so will enable more specifically tailored methods for source/solute influx topology control:
 ```
 import kirchhoff.circuit_flow as kfc
 kfc.initialize_circuit_from_networkx(G)
@@ -37,6 +37,7 @@ kfx.initialize_flux_circuit_from_crystal('simple',3)
 kfx.initialize_flux_circuit_from_random(random_type='voronoi_volume')
 ```
 
+To set node and edge attributes ('source','potential' ,'conductivity','flow_rate') use the set_source_landscape(), set_plexus_landscape() methods of the kirchhof class and use the class method plot_circuit for plotly output:
 ```
 import kirchhoff.circuit_flow as kfc
 
@@ -47,10 +48,13 @@ K.set_plexus_landscape()
 fig=K.plot_circuit()
 fig.show()
 ```
+![hex](./gallery/hexagonal.png)
 ./notebook contains examples to play with in the form of jupyter notebooks
 ##  Requirements
 ``` pandas ```,``` networkx ```, ``` numpy ```,```plotly```
 ## Gallery
-
+![simple](./gallery/simplecubic3d.png)
+![dual](./gallery/duallaves.png)
+![voronoi](./gallery/voronoi3d.png)
 ## Acknowledgement
 ```kirchhoff``` written by Felix Kramer
