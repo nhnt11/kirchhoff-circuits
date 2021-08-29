@@ -145,5 +145,4 @@ dmypy.json
 # code output
 *.npy
 *.pdf
-*.png
 *.pgf
