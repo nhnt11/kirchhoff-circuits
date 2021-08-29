@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-05-23T15:14:10+02:00
+# @Last modified time: 2021-08-29T23:29:37+02:00
 # @License: MIT
 import networkx as nx
 import numpy as np
@@ -103,7 +103,7 @@ class networkx_simple(networkx_crystal,object):
         self.translation_length=1.
         self.simple_cubic_lattice(num_periods)
 
-    #construct full triangulated hex grid as skeleton
+    #construct full cubic grid as skeleton
     def simple_unit_cell(self):
 
         D=nx.Graph()
