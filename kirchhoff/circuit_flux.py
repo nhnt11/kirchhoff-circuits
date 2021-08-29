@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-06-22T23:58:29+02:00
+# @Last modified time: 2021-06-25T17:56:16+02:00
 # @License: MIT
 
 import random as rd
@@ -237,6 +237,6 @@ class flux_circuit(flow_circuit,object):
     def get_edges_data(self):
 
         de=pd.DataFrame(self.edges[['conductivity','flow_rate','absorption','peclet','length']])
-        de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)
+        de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)*self.draw_weight_scaling
 
         return de

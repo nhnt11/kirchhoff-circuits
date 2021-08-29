@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-06-22T23:26:41+02:00
+# @Last modified time: 2021-08-18T11:11:11+02:00
 # @License: MIT
 
 # standard types
@@ -72,6 +72,8 @@ class circuit:
         }
         )
         self.set_graph_containers()
+
+        self.draw_weight_scaling=1.
 
     def set_graph_containers(self):
 
@@ -254,7 +256,6 @@ class circuit:
         self.graph=new_parameters
 
     # output
-
     def plot_circuit(self):
 
         fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes )
