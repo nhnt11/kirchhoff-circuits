@@ -37,7 +37,7 @@ kfx.initialize_flux_circuit_from_crystal('simple',3)
 kfx.initialize_flux_circuit_from_random(random_type='voronoi_volume')
 ```
 
-To set node and edge attributes ('source','potential' ,'conductivity','flow_rate') use the set_source_landscape(), set_plexus_landscape() methods of the kirchhof class and use the class method plot_circuit for plotly output:
+To set node and edge attributes ('source','potential' ,'conductivity','flow_rate') use the set_source_landscape(), set_plexus_landscape() methods of the kirchhoff class and use the class method plot_circuit for plotly output:
 ```
 import kirchhoff.circuit_flow as kfc
 
