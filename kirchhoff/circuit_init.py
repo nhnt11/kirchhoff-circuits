@@ -231,21 +231,24 @@ class circuit:
 
         return pos
 
-    def set_pos(self,pos_data):
+    def set_pos(self,pos_data={}):
 
         pos_key='pos'
         reset_layout=False
+        nodata=False
+        if len(pos_data.values())==0:
+            nodata=True
+
         for j,n in enumerate(self.G.nodes()):
             if pos_key not in self.G.nodes[n]:
                 reset_layout=True
-        if reset_layout:
+        if reset_layout and nodata:
             print('set networkx.spring_layout()')
             pos = nx.spring_layout(self.G)
-            for j,n in enumerate(self.G.nodes()):
-                self.G.nodes[n]=pos[n]
+            nx.set_node_attributes(self.G, pos, 'pos')
         else:
-            for j,n in enumerate(self.G.nodes()):
-                self.G.nodes[n]=pos_data[n]
+            nx.set_node_attributes(self.G, pos_data, 'pos')
+
 
     def set_scale_pars(self, new_parameters):
 
@@ -258,6 +261,7 @@ class circuit:
     # output
     def plot_circuit(self):
 
+        self.set_pos()
         fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes )
 
         return fig

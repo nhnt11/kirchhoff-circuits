@@ -42,7 +42,7 @@ def initialize_flux_circuit_from_crystal(crystal_type='default',periods=1):
 def setup_default_flux_circuit(dict_pars):
 
     kirchhoff_graph=initialize_flux_circuit_from_networkx(dict_pars['plexus'])
-    kirchhoff_graph.set_source_landscape(mode='dipole_border')
+    kirchhoff_graph.set_source_landscape(mode='dipole_point')
     kirchhoff_graph.set_solute_landscape()
 
     kirchhoff_graph.scales['diffusion']=dict_pars['diffusion']
@@ -236,7 +236,7 @@ class flux_circuit(flow_circuit,object):
 
     def get_edges_data(self):
 
-        de=pd.DataFrame(self.edges[['conductivity','flow_rate','absorption','peclet','length']])
+        de=pd.DataFrame(self.edges[['conductivity','flow_rate','absorption','uptake','peclet','length']])
         de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)*self.draw_weight_scaling
 
         return de

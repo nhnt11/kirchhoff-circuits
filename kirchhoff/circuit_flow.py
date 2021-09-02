@@ -341,6 +341,7 @@ class flow_circuit(circuit,object):
         E=self.get_edges_data()
         V=self.get_nodes_data()
 
+        self.set_pos()
         fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes, edge_data=E,  node_data=V )
 
         return fig
