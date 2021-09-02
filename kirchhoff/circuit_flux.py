@@ -69,6 +69,7 @@ class flux_circuit(flow_circuit,object):
         self.edges['length']=[]
         self.edges['radius']=[]
         self.edges['radius_sq']=[]
+        self.edges['uptake']=[]
 
         self.scales.update({'flux':1})
         self.scales.update({'sum_flux':1})

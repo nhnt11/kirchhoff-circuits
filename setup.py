@@ -13,7 +13,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="kirchhoff", # Replace with your own username
-    version="0.1.1",
+    version="0.1.3",
     author="felixk1990",
     author_email="felixuwekramer@protonmail.com",
     description="Collection of routines for creation and manipulation of Kirchhoff circuits based on resistor-only networks, together with 2D/3D spatial embeddings. ",
