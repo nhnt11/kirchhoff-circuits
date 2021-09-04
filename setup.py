@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-05-24T00:03:32+02:00
+# @Last modified time: 2021-09-05T00:06:04+02:00
 # @License: MIT
 
 import setuptools
@@ -13,7 +13,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="kirchhoff", # Replace with your own username
-    version="0.1.3",
+    version="0.1.4",
     author="felixk1990",
     author_email="felixuwekramer@protonmail.com",
     description="Collection of routines for creation and manipulation of Kirchhoff circuits based on resistor-only networks, together with 2D/3D spatial embeddings. ",

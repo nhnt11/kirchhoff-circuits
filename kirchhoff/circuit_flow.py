@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-06-25T17:56:04+02:00
+# @Last modified time: 2021-09-04T16:49:09+02:00
 # @License: MIT
 
 import random as rd
@@ -43,9 +43,17 @@ def initialize_flow_circuit_from_random(random_type='default',periods=10,sidelen
 
 def setup_default_flow_circuit(dict_pars):
 
-    kirchhoff_graph=initialize_flow_circuit_from_networkx(dict_pars['plexus'])
+    kirchhoff_graph=initialize_flow_circuit_from_networkx(dict_pars['skeleton'])
     kirchhoff_graph.set_source_landscape()
     kirchhoff_graph.set_plexus_landscape()
+
+    return kirchhoff_graph
+
+def setup_flow_circuit(dict_pars):
+
+    kirchhoff_graph=initialize_flow_circuit_from_networkx(dict_pars['skeleton'])
+    kirchhoff_graph.set_source_landscape(dict_pars['source'])
+    kirchhoff_graph.set_plexus_landscape(dict_pars['plexus'])
 
     return kirchhoff_graph
 # class flow_circuit(kirchhoff_init.circuit,object):
@@ -169,7 +177,7 @@ class flow_circuit(circuit,object):
         pos=self.get_pos()
         dist={}
         for n,p in pos.items():
-            dist[n]=np.linalg.norm(p)
+            dist[n]=np.linalg.norm(p[0])
 
         vals=list(dist.values())
         max_x=np.amax(vals)
@@ -183,7 +191,7 @@ class flow_circuit(circuit,object):
 
             elif v == min_x:
                 min_idx.append(k)
-
+        
         self.set_poles_relationship(max_idx,min_idx)
 
     def init_source_dipole_point(self):
@@ -329,16 +337,20 @@ class flow_circuit(circuit,object):
 
         return dn
 
-    def get_edges_data(self):
+    def get_edges_data(self,pars):
 
         de=pd.DataFrame(self.edges[['conductivity','flow_rate']])
-        de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)*self.draw_weight_scaling
+
+        if 'width' in pars:
+            de['weight']=np.absolute(self.edges[pars['width']].to_numpy())*self.draw_weight_scaling
+        else:
+            de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)*self.draw_weight_scaling
 
         return de
 
-    def plot_circuit(self):
+    def plot_circuit(self,pars={}):
 
-        E=self.get_edges_data()
+        E=self.get_edges_data(pars)
         V=self.get_nodes_data()
 
         self.set_pos()

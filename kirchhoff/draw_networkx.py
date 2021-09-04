@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-06-25T16:34:29+02:00
+# @Last modified time: 2021-09-05T00:05:38+02:00
 # @License: MIT
 
 # standard types
@@ -186,7 +186,7 @@ def get_edge_invd_traces(input_graph,extra_data, **kwargs):
     trace_list = []
 
     for i,edge in enumerate(E):
-        
+
         options['weight']=5.
 
         if 'weight' in extra_data:
