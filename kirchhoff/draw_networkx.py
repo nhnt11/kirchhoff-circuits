@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-09-05T00:05:38+02:00
+# @Last modified time: 2021-09-05T17:02:35+02:00
 # @License: MIT
 
 # standard types
@@ -24,7 +24,6 @@ def plot_networkx(input_graph,**kwargs):
     edge_data=pd.DataFrame()
 
     for k,v in kwargs.items():
-
         if k in options:
             options[k]=v
     if 'node_data' in kwargs:

@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-08-29T23:29:37+02:00
+# @Last modified time: 2021-09-13T14:52:40+02:00
 # @License: MIT
 import networkx as nx
 import numpy as np
@@ -343,12 +343,15 @@ class networkx_square(networkx_crystal,object):
         super(networkx_square,self).__init__()
         self.square_grid( tiling_factor)
 
-    def square_grid(self, tiling_factor):
+    def square_grid(self,num_periods):
 
-        a=range(0,tiling_factor+1)
+        if type(num_periods) is not int :
+            a=[range(0,num_periods[0]+1),range(0,num_periods[1]+1)]
+        else:
+            a=[range(0,num_periods+1),range(0,num_periods+1)]
 
-        for x in a:
-            for y in a:
+        for x in a[0]:
+            for y in a[1]:
                 self.G.add_node((x,y),pos=(x,y,0))
 
         list_n=list(self.G.nodes())

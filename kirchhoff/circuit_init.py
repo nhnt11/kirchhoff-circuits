@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-08-18T11:11:11+02:00
+# @Last modified time: 2021-09-13T22:58:03+02:00
 # @License: MIT
 
 # standard types
@@ -62,6 +62,7 @@ class circuit:
         {
             'source':[],
             'potential':[],
+            'label':[],
         }
         )
 

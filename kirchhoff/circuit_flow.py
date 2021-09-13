@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-09-04T16:49:09+02:00
+# @Last modified time: 2021-09-13T22:57:38+02:00
 # @License: MIT
 
 import random as rd
@@ -191,7 +191,7 @@ class flow_circuit(circuit,object):
 
             elif v == min_x:
                 min_idx.append(k)
-        
+
         self.set_poles_relationship(max_idx,min_idx)
 
     def init_source_dipole_point(self):
@@ -333,7 +333,7 @@ class flow_circuit(circuit,object):
     # output
     def get_nodes_data(self):
 
-        dn=pd.DataFrame(self.nodes['source'])
+        dn=pd.DataFrame(self.nodes[['source','label']])
 
         return dn
 
@@ -345,6 +345,11 @@ class flow_circuit(circuit,object):
             de['weight']=np.absolute(self.edges[pars['width']].to_numpy())*self.draw_weight_scaling
         else:
             de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)*self.draw_weight_scaling
+
+        # if 'color_edges' in pars:
+        #     de['color_edges']=np.absolute(self.edges[pars['color']].to_numpy())
+        # else:
+        #     pass
 
         return de
 
