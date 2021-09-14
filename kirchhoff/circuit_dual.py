@@ -26,7 +26,7 @@ def initialize_dual_circuit_from_networkx(input_graph1,input_graph2,e_adj):
 
     kirchhoff_dual_graph=dual_circuit()
     kirchhoff_dual_graph.circuit_init_from_networkx([input_graph1,input_graph2] )
-    kirchhoff_dual_graph=e_adj
+    # kirchhoff_dual_graph=e_adj
 
     return kirchhoff_dual_graph
 
@@ -128,8 +128,8 @@ class dual_circuit():
 
 
     # output
-    def plot_circuit(self):
+    def plot_circuit(self,**kwargs):
 
-        fig=dx.plot_networkx_dual(self)
+        fig=dx.plot_networkx_dual(self,**kwargs)
 
         return fig

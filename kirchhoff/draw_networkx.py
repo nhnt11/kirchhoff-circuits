@@ -58,8 +58,8 @@ def plot_networkx_dual(dual_graph,**kwargs):
     for i,K in enumerate(dual_graph.layer):
 
         options['network_id']=i
-        node_data=K.get_nodes_data()
-        edges_data=K.get_edges_data()
+        node_data=K.get_nodes_data(**kwargs)
+        edges_data=K.get_edges_data(**kwargs)
 
         add_traces_nodes(fig,options,K.G,node_data)
         add_traces_edges(fig,options,K.G,edges_data)

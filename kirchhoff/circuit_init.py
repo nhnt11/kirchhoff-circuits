@@ -266,3 +266,15 @@ class circuit:
         fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes )
 
         return fig
+
+    def get_nodes_data(self):
+
+        dn=pd.DataFrame(self.nodes[['source','label']])
+
+        return dn
+
+    def get_edges_data(self):
+
+        de=pd.DataFrame(self.edges[['conductivity','flow_rate']])
+
+        return de

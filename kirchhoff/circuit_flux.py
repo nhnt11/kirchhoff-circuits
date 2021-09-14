@@ -235,9 +235,13 @@ class flux_circuit(flow_circuit,object):
 
         return dn
 
-    def get_edges_data(self):
+    def get_edges_data(self, **kwargs):
 
         de=pd.DataFrame(self.edges[['conductivity','flow_rate','absorption','uptake','peclet','length']])
-        de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)*self.draw_weight_scaling
+
+        if 'width' in kwargs:
+            de['weight']=np.absolute(self.edges[kwargs['width']].to_numpy())*self.draw_weight_scaling
+        else:
+            de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)*self.draw_weight_scaling
 
         return de

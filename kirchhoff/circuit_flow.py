@@ -337,12 +337,12 @@ class flow_circuit(circuit,object):
 
         return dn
 
-    def get_edges_data(self,pars):
+    def get_edges_data(self,**kwargs):
 
         de=pd.DataFrame(self.edges[['conductivity','flow_rate']])
 
-        if 'width' in pars:
-            de['weight']=np.absolute(self.edges[pars['width']].to_numpy())*self.draw_weight_scaling
+        if 'width' in kwargs:
+            de['weight']=np.absolute(self.edges[kwargs['width']].to_numpy())*self.draw_weight_scaling
         else:
             de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)*self.draw_weight_scaling
 
@@ -353,9 +353,9 @@ class flow_circuit(circuit,object):
 
         return de
 
-    def plot_circuit(self,pars={}):
+    def plot_circuit(self, **kwargs):
 
-        E=self.get_edges_data(pars)
+        E=self.get_edges_data(**kwargs)
         V=self.get_nodes_data()
 
         self.set_pos()
