@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-09-13T22:58:03+02:00
+# @Last modified time: 2021-09-15T15:45:00+02:00
 # @License: MIT
 
 # standard types
@@ -263,8 +263,11 @@ class circuit:
     def plot_circuit(self):
 
         self.set_pos()
-        fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes )
 
+        E=self.get_edges_data()
+        V=self.get_nodes_data()
+        # fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes )
+        fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes, edge_data=E,  node_data=V )
         return fig
 
     def get_nodes_data(self):
