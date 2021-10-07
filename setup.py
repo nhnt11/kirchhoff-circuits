@@ -12,12 +12,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="kirchhoff", # Replace with your own username
-<<<<<<< Updated upstream
-    version="0.1.5",
-=======
+    name="kirchhoff", 
     version="0.1.6",
->>>>>>> Stashed changes
     author="felixk1990",
     author_email="felixuwekramer@protonmail.com",
     description="Collection of routines for creation and manipulation of Kirchhoff circuits based on resistor-only networks, together with 2D/3D spatial embeddings. ",
