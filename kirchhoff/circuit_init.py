@@ -70,6 +70,7 @@ class circuit:
         {
             'conductivity':[],
             'flow_rate':[],
+            'label':[],
         }
         )
         self.set_graph_containers()
@@ -109,7 +110,7 @@ class circuit:
             self.nodes[k]=np.zeros(n)
 
         for k in self.edges:
-            self.edges[k]=np.ones(e)
+            self.edges[k]=np.zeros(e)
 
         self.set_network_attributes()
         print('circuit(): initialized and ready for (some) action :)')
@@ -260,24 +261,31 @@ class circuit:
         self.graph=new_parameters
 
     # output
-    def plot_circuit(self):
+    def plot_circuit(self,*args,**kwargs):
 
         self.set_pos()
 
-        E=self.get_edges_data()
-        V=self.get_nodes_data()
-        # fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes )
-        fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes, edge_data=E,  node_data=V )
+        E=self.get_edges_data(*args)
+        V=self.get_nodes_data(*args)
+
+        fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes, edge_data=E,  node_data=V ,**kwargs)
         return fig
 
-    def get_nodes_data(self):
+    def get_nodes_data(self, *args ):
 
-        dn=pd.DataFrame(self.nodes[['source','label']])
+        # dn=pd.DataFrame(self.nodes[['label']])
+        cols=['label']
+        cols+=[a for a in args if a in self.nodes.columns]
+
+        dn=pd.DataFrame(self.nodes[cols])
 
         return dn
 
-    def get_edges_data(self):
+    def get_edges_data(self, *args ):
 
-        de=pd.DataFrame(self.edges[['conductivity','flow_rate']])
+        cols=['label']
+        cols+=[a for a in args if a in self.edges.columns]
+
+        de=pd.DataFrame(self.edges[cols])
 
         return de

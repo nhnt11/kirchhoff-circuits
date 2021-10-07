@@ -12,6 +12,7 @@ import numpy as np
 def init_graph_from_crystal(crystal_type,periods):
 
     choose_constructor_option={
+
         'default': networkx_simple,
         'simple': networkx_simple,
         'chain': networkx_chain,
@@ -22,7 +23,8 @@ def init_graph_from_crystal(crystal_type,periods):
         'trigonal_stack': networkx_trigonal_stack,
         'square': networkx_square,
         'hexagonal':networkx_hexagonal,
-        'trigonal_planar':networkx_trigonal_planar
+        'trigonal_planar':networkx_trigonal_planar,
+
         }
 
     if crystal_type in choose_constructor_option:

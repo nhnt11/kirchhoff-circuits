@@ -19,6 +19,7 @@ def init_dual_minsurf_graphs(dual_type,num_periods):
         'simple': networkx_dual_simple,
         'diamond':networkx_dual_diamond,
         'laves':networkx_dual_laves,
+        'catenation':networkx_dual_catenation,
 
     }
 
@@ -384,3 +385,36 @@ class networkx_dual_laves(networkx_dual,object):
                             counter_e+=1
 
         return G
+
+class networkx_dual_catenation(networkx_dual,object):
+
+    def __init__(self,num_periods):
+
+        super(networkx_dual_catenation,self).__init__()
+        self.lattice_constant=1
+        self.translation_length=1
+        self.dual_ladder(num_periods)
+
+    def dual_ladder(self,num_periods):
+
+        np1=[num_periods,1]
+        np2=[num_periods+1,1]
+
+        N=[np1,np2]
+        ic=init_crystal.networkx_square
+        G1,G2=[ nx.Graph(ic(i).G) for i in N]
+
+        theta=np.pi/2.
+        rot_mat=np.array(( (1,0,0) , (0, np.cos(theta), -np.sin(theta)),
+               (0, np.sin(theta),  np.cos(theta)) ))
+
+        for n in G1.nodes():
+
+            # x=G1.nodes[n]['pos'][0]
+            # y=G1.nodes[n]['pos'][1]
+            # z=G1.nodes[n]['pos'][2]
+
+            G1.nodes[n]['pos']=self.lattice_constant *np.array((0.5,0.5,-0.5)) + np.dot(rot_mat,G1.nodes[n]['pos'])
+
+
+        self.layer=[G1,G2]

@@ -18,8 +18,10 @@ def plot_networkx(input_graph,**kwargs):
     options={
         'network_id':0,
         'color_nodes':['#a845b5'],
-        'color_edges':['#c762d4']
+        'color_edges':['#c762d4'],
+        'markersize': [2]
     }
+
     node_data=pd.DataFrame()
     edge_data=pd.DataFrame()
 
@@ -46,7 +48,8 @@ def plot_networkx_dual(dual_graph,**kwargs):
     options={
         'network_id':0,
         'color_nodes':['#6aa84f','#a845b5'],
-        'color_edges':['#2BDF94','#c762d4']
+        'color_edges':['#2BDF94','#c762d4'],
+        'markersize': [2,2]
     }
 
     for k,v in kwargs.items():
@@ -84,7 +87,8 @@ def add_traces_edges(fig, options, input_graph,extra_data):
 def add_traces_nodes(fig, options, input_graph,extra_data):
 
     idx=options['network_id']
-    node_trace=get_node_trace(input_graph,extra_data,color=options['color_nodes'][idx])
+
+    node_trace=get_node_trace( input_graph, extra_data, color = options['color_nodes'][idx], markersize = options['markersize'][idx] )
     fig.add_trace( node_trace)
 
 #auxillary functions generating traces for nodes and edges
@@ -92,23 +96,24 @@ def get_edge_mid_trace(input_graph,extra_data, **kwargs):
 
     options={
         'color':'#888',
-        'dim':3
+        # 'dim':3
     }
+    dim=3
     for k,v in kwargs.items():
         if k in options:
             options[k]=v
 
     pos=nx.get_node_attributes(input_graph,'pos')
-    if len(list(pos.values())[0]) != options['dim']:
-        options['dim']=len(list(pos.values())[0])
+    if len(list(pos.values())[0]) != dim:
+        dim=len(list(pos.values())[0])
 
     E=input_graph.edges()
     if 'edge_list' in options:
         E=options['edge_list']
 
-    middle_node_trace=get_hover_scatter_from_template(options)
+    middle_node_trace=get_hover_scatter_from_template(dim,options)
 
-    XYZ= [[] for i in range(options['dim'])]
+    XYZ= [[] for i in range(dim)]
     for j,edge in enumerate(E):
 
         XYZ_0 =pos[edge[0]]
@@ -136,9 +141,9 @@ def set_hover_info(trace,XYZ,extra_data):
     else:
         trace['hoverinfo']='none'
 
-def get_hover_scatter_from_template(options):
+def get_hover_scatter_from_template(dim,options):
 
-    if options['dim']==3:
+    if dim==3:
         middle_node_trace = go.Scatter3d(
             x=[],
             y=[],
@@ -147,7 +152,8 @@ def get_hover_scatter_from_template(options):
             mode='markers',
             hoverinfo='text',
             opacity=0,
-            marker=dict(color=options['color'])
+            marker=dict(**options)
+            # marker=dict(color=options['color'])
         )
     else:
         middle_node_trace = go.Scatter(
@@ -156,10 +162,15 @@ def get_hover_scatter_from_template(options):
             text=[],
             mode='markers',
             hoverinfo='text',
+            # marker=go.scatter.Marker(
+            #     opacity=0,
+            #     color=options['color']
+            # )
             marker=go.scatter.Marker(
                 opacity=0,
-                color=options['color']
+                **options
             )
+
         )
 
     return middle_node_trace
@@ -168,31 +179,45 @@ def get_edge_invd_traces(input_graph,extra_data, **kwargs):
 
     options={
         'color':'#888',
-        'dim':3
+        # 'dim':3
     }
+    dim=3
     for k,v in kwargs.items():
         if k in options:
             options[k]=v
 
+    # handle exceptions and new containers
+    colorful=False
+    if type(options['color'])!=str:
+        colorful=True
+        options['colorscale']='plasma'
+        options['cmin']=np.min(options['color'])
+        options['cmax']=np.max(options['color'])
+
     pos=nx.get_node_attributes(input_graph,'pos')
-    if len(list(pos.values())[0]) != options['dim']:
-        options['dim']=len(list(pos.values())[0])
+    if len(list(pos.values())[0]) != dim:
+        dim=len(list(pos.values())[0])
 
     E=input_graph.edges()
-    if 'edge_list' in options:
-        E=options['edge_list']
+    # if 'edge_list' in options:
+    #     E=options['edge_list']
+
+    # add new traces
 
     trace_list = []
-
+    aux_option=dict(options)
     for i,edge in enumerate(E):
 
-        options['weight']=5.
+        aux_option['width']=5.
 
         if 'weight' in extra_data:
 
-            options['weight']=extra_data['weight'][i]
+            aux_option['width']=extra_data['weight'][i]
 
-        trace=get_line_from_template(options)
+        if colorful:
+            aux_option['color']=[options['color'][i] for j in range(2)]
+
+        trace=get_line_from_template(dim,aux_option)
         XYZ_0 = input_graph.nodes[edge[0]]['pos']
         XYZ_1 = input_graph.nodes[edge[1]]['pos']
 
@@ -206,19 +231,21 @@ def set_edge_info(trace,XYZ_0,XYZ_1):
     tags=['x','y','z']
     if len(XYZ_0)<3:
         tags=['x','y']
+
     for i,t in enumerate(tags):
         trace[t]=[XYZ_0[i], XYZ_1[i], None]
 
-def get_line_from_template(options):
+def get_line_from_template(dim,options):
 
-    if options['dim']==3:
+    if dim==3:
 
         trace=go.Scatter3d(
             x=[],
             y=[],
             z=[],
             mode='lines',
-            line=dict(color=options['color'],  width=options['weight']),
+            # line=dict(color=options['color'],  width=options['weight'], cmin=options['cmin'], cmax=options['cmax']),
+            line=dict(**options),
             hoverinfo='none'
         )
 
@@ -228,11 +255,31 @@ def get_line_from_template(options):
             x=[],
             y=[],
             mode='lines',
-            line=dict(color=options['color'], width=options['weight']),
+            # line=dict(color=options['color'], width=options['weight'], cmin=options['cmin'], cmax=options['cmax']),
+            line=dict(**options),
             hoverinfo='none'
         )
 
     return  trace
+
+def get_node_trace(input_graph,extra_data,**kwargs):
+
+    options={
+        'color':'#888',
+        'dim':3,
+        'markersize':2
+    }
+
+    for k,v in kwargs.items():
+        if k in options:
+
+            options[k]=v
+
+    node_xyz=get_node_coords(input_graph,options)
+
+    node_trace = get_node_scatter(node_xyz,extra_data,options)
+
+    return node_trace
 
 def get_node_coords(input_graph,options):
 
@@ -273,10 +320,10 @@ def get_node_scatter(node_xyz,extra_data,options):
         hoverinfo=mode,
         hovertext=hover,
         marker=dict(
-            size=2,
+            size=options['markersize'],
             line_width=2,
             color=options['color'])
-            )
+        )
     else:
         node_trace = go.Scatter(
         x=node_xyz[0], y=node_xyz[1],
@@ -284,26 +331,10 @@ def get_node_scatter(node_xyz,extra_data,options):
         hoverinfo=mode,
         hovertext=hover,
         marker=dict(
-            size=2,
+            size=options['markersize'],
             line_width=2,
             color=options['color'])
             )
-
-    return node_trace
-
-def get_node_trace(input_graph,extra_data,**kwargs):
-
-    options={
-        'color':'#888',
-        'dim':3
-    }
-    for k,v in kwargs.items():
-        if k in options:
-            options[k]=v
-
-    node_xyz=get_node_coords(input_graph,options)
-
-    node_trace = get_node_scatter(node_xyz,extra_data,options)
 
     return node_trace
 
