@@ -33,6 +33,24 @@ def init_dual_minsurf_graphs(dual_type,num_periods):
 
     return dual_graph
 
+def init_dual_catenation(dual_type,num_periods):
+
+    plexus_mode={
+
+        'chain':networkx_dual_catenation,
+
+    }
+
+    if  dual_type in plexus_mode:
+        dual_graph=plexus_mode[dual_type](num_periods)
+
+
+    else:
+        sys.exit('bilayer_graph.construct_dual_networks_crystal(): invalid graph mode')
+
+
+    return dual_graph
+
 class networkx_dual(init_crystal.networkx_crystal,object):
 
     def __init__(self):
@@ -230,7 +248,6 @@ class networkx_dual_simple(networkx_dual,object):
 
         return adj
 
-
 class networkx_dual_diamond(networkx_dual,object):
 
     def __init__(self,num_periods):
@@ -293,7 +310,6 @@ class networkx_dual_diamond(networkx_dual,object):
                     counter_e+=1
 
         return G
-
 
 class networkx_dual_laves(networkx_dual,object):
 

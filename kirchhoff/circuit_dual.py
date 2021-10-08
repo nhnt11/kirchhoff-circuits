@@ -41,6 +41,16 @@ def initialize_dual_circuit_from_minsurf(dual_type='simple',num_periods=2):
 
     return kirchhoff_dual_graph
 
+def initialize_dual_circuit_from_catenation(dual_type='chain',num_periods=1):
+
+    kirchhoff_dual_graph=dual_circuit()
+
+    dual_graph=init_dual.init_dual_catenation(dual_type,num_periods)
+
+    kirchhoff_dual_graph.circuit_init_from_networkx([dual_graph.layer[0],dual_graph.layer[1]] )
+
+    return kirchhoff_dual_graph
+
 def initialize_dual_flow_circuit_from_minsurf(dual_type='simple',num_periods=2):
 
     kirchhoff_dual_graph=dual_circuit()
