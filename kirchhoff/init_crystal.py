@@ -394,11 +394,11 @@ class networkx_trigonal_planar(networkx_crystal,object):
 
       #construct spine
       self.spine = 2*(n-1)
-      self.G.add_node((0,0),pos=np.array([0.,0.]), label=self.count_n())
+      self.G.add_node((0,0),pos=np.array([0.,0.]))
 
       for m in range(self.spine):
 
-          self.G.add_node((m+1,0),pos=np.array([(m+1)*self.l,0.]),label=self.count_n())
+          self.G.add_node((m+1,0),pos=np.array([(m+1),0.]))
           self.G.add_edge((m,0),(m+1,0),slope=(self.G.nodes[(m,0)]['pos'],self.G.nodes[(m+1,0)]['pos']))
 
       #construct lower/upper halfspace
