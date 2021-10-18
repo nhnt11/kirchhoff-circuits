@@ -331,20 +331,29 @@ class flow_circuit(circuit,object):
             self.init_plexus_default()
 
     # output
-    def get_nodes_data(self):
+    def get_nodes_data(self,*args ):
 
-        dn=pd.DataFrame(self.nodes[['source','label']])
+        # dn=pd.DataFrame(self.nodes[['source','label']])
+        cols=['label','source']
+        cols+=[a for a in args if a in self.nodes.columns]
+
+        dn=pd.DataFrame(self.nodes[cols])
 
         return dn
 
-    def get_edges_data(self,**kwargs):
+    def get_edges_data(self,*args ):
 
-        de=pd.DataFrame(self.edges[['conductivity','flow_rate']])
+        # de=pd.DataFrame(self.edges[['conductivity','flow_rate']])
 
-        if 'width' in kwargs:
-            de['weight']=np.absolute(self.edges[kwargs['width']].to_numpy())*self.draw_weight_scaling
-        else:
-            de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)*self.draw_weight_scaling
+        # if 'width' in kwargs:
+        #     de['weight']=np.absolute(self.edges[kwargs['width']].to_numpy())*self.draw_weight_scaling
+        # else:
+        #     de['weight']=np.power(self.edges['conductivity'].to_numpy(),0.25)*self.draw_weight_scaling
+
+        cols=['label','conductivity','flow_rate']
+        cols+=[a for a in args if a in self.edges.columns]
+
+        de=pd.DataFrame(self.edges[cols])
 
         # if 'color_edges' in pars:
         #     de['color_edges']=np.absolute(self.edges[pars['color']].to_numpy())
@@ -353,12 +362,12 @@ class flow_circuit(circuit,object):
 
         return de
 
-    def plot_circuit(self, **kwargs):
-
-        E=self.get_edges_data(**kwargs)
-        V=self.get_nodes_data()
+    def plot_circuit(self,*args, **kwargs):
 
         self.set_pos()
-        fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes, edge_data=E,  node_data=V )
+        E=self.get_edges_data(*args)
+        V=self.get_nodes_data(*args)
+
+        fig=dx.plot_networkx(   self.G, edge_list=self.list_graph_edges, node_list=self.list_graph_nodes, edge_data=E,  node_data=V ,**kwargs)
 
         return fig

@@ -10,7 +10,9 @@
 import networkx as nx
 import numpy as np
 import pandas as pd
+import plotly
 import plotly.graph_objects as go
+
 
 #generate interactive plots with plotly and return the respective figures
 def plot_networkx(input_graph,**kwargs):
@@ -19,7 +21,8 @@ def plot_networkx(input_graph,**kwargs):
         'network_id':0,
         'color_nodes':['#a845b5'],
         'color_edges':['#c762d4'],
-        'markersize': [2]
+        'markersize': [2],
+        'linewidth': [5]
     }
 
     node_data=pd.DataFrame()
@@ -49,7 +52,8 @@ def plot_networkx_dual(dual_graph,**kwargs):
         'network_id':0,
         'color_nodes':['#6aa84f','#a845b5'],
         'color_edges':['#2BDF94','#c762d4'],
-        'markersize': [2,2]
+        'markersize': [2,2],
+        'linewidth': [5,5]
     }
 
     for k,v in kwargs.items():
@@ -77,7 +81,7 @@ def add_traces_edges(fig, options, input_graph,extra_data):
     idx=options['network_id']
 
     edge_mid_trace=get_edge_mid_trace(input_graph,extra_data,color=options['color_edges'][idx])
-    edge_invd_traces=get_edge_invd_traces(input_graph,extra_data,color=options['color_edges'][idx])
+    edge_invd_traces=get_edge_invd_traces(input_graph,extra_data,color=options['color_edges'][idx], linewidth= options['linewidth'][idx])
 
     for eit in edge_invd_traces:
         fig.add_trace(eit)
@@ -187,12 +191,13 @@ def get_edge_invd_traces(input_graph,extra_data, **kwargs):
             options[k]=v
 
     # handle exceptions and new containers
+
     colorful=False
     if type(options['color'])!=str:
         colorful=True
-        options['colorscale']='plasma'
-        options['cmin']=np.min(options['color'])
-        options['cmax']=np.max(options['color'])
+        cmax=np.max(options['color'])
+        cmin=np.min(options['color'])
+        options['color']= plotly.colors.sample_colorscale('plasma', options['color'], low=cmin, high=cmax)
 
     pos=nx.get_node_attributes(input_graph,'pos')
     if len(list(pos.values())[0]) != dim:
@@ -208,14 +213,14 @@ def get_edge_invd_traces(input_graph,extra_data, **kwargs):
     aux_option=dict(options)
     for i,edge in enumerate(E):
 
-        aux_option['width']=5.
+        # aux_option['width']=options['linewidth']
+        aux_option['width']=2
 
         if 'weight' in extra_data:
-
             aux_option['width']=extra_data['weight'][i]
 
         if colorful:
-            aux_option['color']=[options['color'][i] for j in range(2)]
+            aux_option['color']=options['color'][i]
 
         trace=get_line_from_template(dim,aux_option)
         XYZ_0 = input_graph.nodes[edge[0]]['pos']
