@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-07T12:41:20+01:00
+# @Last modified time: 2021-11-07T15:47:40+01:00
 # @License: MIT
 
 import networkx as nx
@@ -16,7 +16,7 @@ import kirchhoff.init_crystal  as init_crystal
 def init_dual_minsurf_graphs(dual_type, num_periods):
 
     """
-    Initialize a dual spatially embedded circuit, with internal graphs based on
+    Initialize a dual spatially embedded multilayer graph, with internal graphs based on
      the network skeletons of triply-periodic minimal surfaces.
 
     Args:
@@ -24,7 +24,7 @@ def init_dual_minsurf_graphs(dual_type, num_periods):
         num_periods (int): Repetition number of the lattice's unit cell.
 
     Returns:
-        dual_circuit: A dual circuit system.
+        networkx_dual: A dual networkx object.
 
     """
 
@@ -46,7 +46,7 @@ def init_dual_minsurf_graphs(dual_type, num_periods):
 def init_dual_catenation(dual_type, num_periods):
 
     """
-    Initialize a dual spatially embedded circuit, with internal graphs based on
+    Initialize a dual spatially embedded multilayer graph, with internal graphs based on
     simple catenatednetwork skeletons.
 
     Args:
@@ -54,7 +54,7 @@ def init_dual_catenation(dual_type, num_periods):
         num_periods (int): Repetition number of the lattice's unit cell.
 
     Returns:
-        dual_circuit: A dual circuit system.
+        networkx_dual: A dual networkx object.
 
     """
     plexus_mode={
@@ -76,7 +76,6 @@ class networkx_dual(init_crystal.networkx_crystal, object):
 
     Attributes
     ----------
-
         layer (list): List of the graphs contained in the multilayer network.
         lattice_constant (float): Scale for the spacing between the networks.
         translation_length (float): Scale for the translation difference between the multiple networks.

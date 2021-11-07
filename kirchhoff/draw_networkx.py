@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-06T21:04:23+01:00
+# @Last modified time: 2021-11-07T16:21:36+01:00
 # @License: MIT
 
 # standard types
@@ -16,6 +16,19 @@ import plotly.graph_objects as go
 
 #generate interactive plots with plotly and return the respective figures
 def plot_networkx(input_graph, **kwargs):
+
+    """
+    Return an interactive network plot, which shows the internal edge and node
+     data via hover and text.
+
+    Args:
+        input_graph (nx.Graph): A networkx graph.
+        kwargs (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+
+    Returns:
+        plotly.graph_objects.Figure: A plotly figure object
+
+    """
 
     options = {
         'network_id':0,
@@ -46,7 +59,19 @@ def plot_networkx(input_graph, **kwargs):
 
     return fig
 
-def plot_networkx_dual(dual_graph, **kwargs):
+def plot_networkx_dual(dual_circuit, **kwargs):
+    """
+    Return an interactive network plot, which shows the internal edge and node
+     data via hover and text for a multilayer system.
+
+    Args:
+        dual_circuit (dual_circuit): A dual_circuit object.
+        kwargs (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+
+    Returns:
+        plotly.graph_objects.Figure: A plotly figure object
+
+    """
 
     options = {
         'network_id':0,
@@ -76,7 +101,18 @@ def plot_networkx_dual(dual_graph, **kwargs):
     return fig
 
 # integrate traces into the figure
-def add_traces_edges(fig,  options,  input_graph, extra_data):
+def add_traces_edges(fig, options, input_graph, extra_data):
+
+    """
+    Add line traces for interactive edge data display.
+
+    Args:
+        fig (plotly.graph_objects.Figure: A plotly figure object
+        options (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+        input_graph (nx.Graph): A networkx graph.
+        extra_data (pandas.DataFrame): A dataframe holding the data.
+
+    """
 
     idx = options['network_id']
 
@@ -98,6 +134,17 @@ def add_traces_edges(fig,  options,  input_graph, extra_data):
 
 def add_traces_nodes(fig,  options,  input_graph, extra_data):
 
+    """
+    Add point traces for interactive node data display.
+
+    Args:
+        fig (plotly.graph_objects.Figure: A plotly figure object
+        options (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+        input_graph (nx.Graph): A networkx graph.
+        extra_data (pandas.DataFrame): A dataframe holding the data.
+
+    """
+
     idx = options['network_id']
 
     node_trace = get_node_trace( input_graph,  extra_data,  color  =  options['color_nodes'][idx],  markersize  =  options['markersize'][idx] )
@@ -105,6 +152,19 @@ def add_traces_nodes(fig,  options,  input_graph, extra_data):
 
 #auxillary functions generating traces for nodes and edges
 def get_edge_mid_trace(input_graph, extra_data,  **kwargs):
+
+    """
+    Return transparent line traces for interactive edge data display.
+
+    Args:
+        input_graph (nx.Graph): A networkx graph.
+        extra_data (pandas.DataFrame): A dataframe holding the data.
+        kwargs (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+
+    Returns:
+        plotly.graph_objects.Scatter: A plotly scatter object
+
+    """
 
     options = {
         'color':'#888',
@@ -140,6 +200,16 @@ def get_edge_mid_trace(input_graph, extra_data,  **kwargs):
 
 def set_hover_info(trace, XYZ, extra_data):
 
+    """
+    Set hover info for figure traces.
+
+    Args:
+        trace (plotly.graph_objects.trace): A networkx graph.
+        XYZ (ndarray): Nodal position data.
+        extra_data (pandas.DataFrame): A dataframe holding the data.
+
+    """
+
     tags = ['x', 'y', 'z']
     if len(XYZ)<3:
         tags = ['x', 'y']
@@ -155,6 +225,18 @@ def set_hover_info(trace, XYZ, extra_data):
         trace['hoverinfo'] = 'none'
 
 def get_hover_scatter_from_template(dim, options):
+
+    """
+    Get scatter hover info for figure traces.
+
+    Args:
+        dim (int): A dimensional identifier.
+        options (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+
+    Returns:
+        plotly.graph_objects.Scatter: A plotly scatter object
+
+    """
 
     if dim == 3:
         middle_node_trace = go.Scatter3d(
@@ -185,6 +267,19 @@ def get_hover_scatter_from_template(dim, options):
     return middle_node_trace
 
 def get_edge_invd_traces(input_graph, extra_data,  **kwargs):
+
+    """
+    Return individual line traces for interactive edge data display.
+
+    Args:
+        input_graph (nx.Graph): A networkx graph.
+        extra_data (pandas.DataFrame): A dataframe holding the data.
+        kwargs (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+
+    Returns:
+        plotly.graph_objects.Scatter: A plotly scatter object
+
+    """
 
     options = {
         'color':'#888',
@@ -238,6 +333,15 @@ def get_edge_invd_traces(input_graph, extra_data,  **kwargs):
 
 def set_edge_info(trace, XYZ_0, XYZ_1):
 
+    """
+    Set hover info for figure traces.
+
+    Args:
+        trace (plotly.graph_objects.trace): A networkx graph.
+        XYZ_0 (ndarray): Nodal position data.
+        XYZ_0 (ndarray): Nodal position data.
+    """
+
     tags = ['x', 'y', 'z']
     if len(XYZ_0)<3:
         tags = ['x', 'y']
@@ -246,6 +350,18 @@ def set_edge_info(trace, XYZ_0, XYZ_1):
         trace[t] = [XYZ_0[i],  XYZ_1[i],  None]
 
 def get_line_from_template(dim, options):
+
+    """
+    Get a line trace element.
+
+    Args:
+        dim (int): A dimensional identifier.
+        options (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+
+    Returns:
+        plotly.graph_objects.Scatter: A plotly scatter object
+
+    """
 
     if dim == 3:
 
@@ -272,6 +388,20 @@ def get_line_from_template(dim, options):
 
 def get_node_trace(input_graph, extra_data, **kwargs):
 
+
+    """
+    Return nodal traces for interactive node data display.
+
+    Args:
+        input_graph (nx.Graph): A networkx graph.
+        extra_data (pandas.DataFrame): A dataframe holding the data.
+        kwargs (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+
+    Returns:
+        plotly.graph_objects.Scatter: A plotly scatter object
+
+    """
+
     options = {
         'color':'#888',
         'dim':3,
@@ -290,6 +420,19 @@ def get_node_trace(input_graph, extra_data, **kwargs):
     return node_trace
 
 def get_node_coords(input_graph, options):
+
+
+    """
+    Return nodal coordinates in specified tuple format.
+
+    Args:
+        input_graph (nx.Graph): A networkx graph.
+        options (dictionary): A dictionary for circuit keywords for readout.
+
+    Returns:
+        list: A list of nodal postions [X, Y, Z]
+
+    """
 
     pos = nx.get_node_attributes(input_graph, 'pos')
     if len(list(pos.values())[0])!= options['dim']:
@@ -312,6 +455,19 @@ def get_node_coords(input_graph, options):
     return node_xyz
 
 def get_node_scatter(node_xyz, extra_data, options):
+
+    """
+    Return nodal traces for interactive node data display.
+
+    Args:
+        node_xyz (list): A list of nodal postions [X, Y, Z].
+        extra_data (pandas.DataFrame): A dataframe holding the data.
+        options (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+
+    Returns:
+        plotly.graph_objects.Scatter: A plotly scatter object
+
+    """
 
     mode = 'none'
     hover = ''
@@ -348,6 +504,18 @@ def get_node_scatter(node_xyz, extra_data, options):
     return node_trace
 
 def create_tag(vals, columns):
+
+    """
+    Create a hover tag.
+
+    Args:
+        vals (list): A list of values.
+        columns (list):A list of keywords.
+
+    Returns:
+        string: A string in makrdown format.
+
+    """
 
     tag = f''
     for i, c in enumerate(columns):
