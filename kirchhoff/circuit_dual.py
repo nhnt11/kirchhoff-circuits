@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-06T21:16:45+01:00
+# @Last modified time: 2021-11-07T12:46:09+01:00
 # @License: MIT
 
 import networkx as nx
@@ -39,7 +39,7 @@ def initialize_dual_circuit_from_minsurf(dual_type='simple', num_periods=2):
 
     return kirchhoff_dual
 
-def initialize_dual_circuit_from_catenation(dual_type='chain', num_periods=1):
+def initialize_dual_circuit_from_catenation(dual_type='catenation', num_periods=1):
 
     kirchhoff_dual = dual_circuit()
 
@@ -58,7 +58,7 @@ def initialize_dual_flow_circuit_from_minsurf(dual_type='simple', num_periods=2)
     kirchhoff_dual.flow_circuit_init_from_networkx([g for g in dual_graph.layer])
     kirchhoff_dual.distance_edges()
 
-    return kirchhoff_dual_graph
+    return kirchhoff_dual
 
 def initialize_dual_flux_circuit_from_minsurf(dual_type='simple', num_periods=2):
 
@@ -68,6 +68,40 @@ def initialize_dual_flux_circuit_from_minsurf(dual_type='simple', num_periods=2)
 
     kirchhoff_dual.flux_circuit_init_from_networkx([g for g in dual_graph.layer])
     kirchhoff_dual.distance_edges()
+
+    return kirchhoff_dual
+
+def initialize_dual_flow_circuit_from_catenation(dual_type='catenation', num_periods=1):
+
+    kirchhoff_dual = dual_circuit()
+
+    dual_graph = init_dual.init_dual_catenation(dual_type, num_periods)
+
+    kirchhoff_dual.flow_circuit_init_from_networkx([g for g in dual_graph.layer])
+
+    return kirchhoff_dual
+
+def initialize_dual_flux_circuit_from_catenation(dual_type='catenation', num_periods=1):
+
+    kirchhoff_dual = dual_circuit()
+
+    dual_graph = init_dual.init_dual_catenation(dual_type, num_periods)
+
+    kirchhoff_dual.flux_circuit_init_from_networkx([g for g in dual_graph.layer])
+
+    return kirchhoff_dual
+
+def initialize_dual_flow_circuit_from_networkx(input_graph1, input_graph2, e_adj):
+
+    kirchhoff_dual = dual_circuit()
+    kirchhoff_dual.flow_circuit_init_from_networkx([input_graph1, input_graph2])
+
+    return kirchhoff_dual
+
+def initialize_dual_flux_circuit_from_networkx(input_graph1, input_graph2, e_adj):
+
+    kirchhoff_dual = dual_circuit()
+    kirchhoff_dual.flux_circuit_init_from_networkx([input_graph1, input_graph2])
 
     return kirchhoff_dual
 

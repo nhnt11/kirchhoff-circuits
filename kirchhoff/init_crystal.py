@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-06T21:21:36+01:00
+# @Last modified time: 2021-11-07T12:15:36+01:00
 # @License: MIT
 import networkx as nx
 import numpy as np
@@ -19,7 +19,6 @@ def init_graph_from_crystal(crystal_type, periods):
         'fcc': networkx_fcc,
         'diamond': networkx_diamond,
         'laves': networkx_laves,
-        'trigonal_stack': networkx_trigonal_stack,
         'square': networkx_square,
         'hexagonal': networkx_hexagonal,
         'trigonal_planar': networkx_trigonal_planar,
@@ -33,6 +32,22 @@ def init_graph_from_crystal(crystal_type, periods):
         crystal = choose_constructor_option['default'](1)
 
     return crystal.G
+
+def init_graph_from_asymCrystal(crystal_type, periodsZ, periodsXY):
+
+    choose_constructor_option = {
+        'trigonal_stack': networkx_trigonal_stack,
+        }
+
+    if crystal_type in choose_constructor_option:
+            crystal = choose_constructor_option[crystal_type](periodsZ, periodsXY)
+
+    else :
+        print('Warning, crystal type unknown, set default: trigonal_stack')
+        crystal = choose_constructor_option['default'](2,2)
+
+    return crystal.G
+
 
 class networkx_crystal():
 
@@ -191,7 +206,7 @@ class networkx_fcc(networkx_crystal, object):
     def simple_fcc_lattice(self, n):
 
         D = self.fcc_unit_cell()
-        self.periodic_cell_structure(D, n, lattice_constant, translation_length)
+        self.periodic_cell_structure(D, n)
 
 class networkx_diamond(networkx_crystal, object):
 
@@ -279,9 +294,10 @@ class networkx_laves(networkx_crystal, object):
 
 class networkx_trigonal_stack(networkx_crystal, object):
 
-    def __init__(self,  tiling_factor):
+    def __init__(self, stacks, tiling_factor):
         super(networkx_trigonal_stack, self).__init__()
-        self.triangulated_hexagon_stack(tiling_factor)
+        self.triangulated_hexagon_stack(stacks, tiling_factor)
+
     #define crosslinking procedure between the generated single-layers
     def crosslink_stacks(self):
 
@@ -325,9 +341,9 @@ class networkx_trigonal_stack(networkx_crystal, object):
             v = (0, a*m, z)
             w = (1, a*m, z)
 
+            self.G.add_node(u, pos = ((m+1)/2., a*(np.sqrt(3.)/2.)*(m+1), z))
             uv = (self.G.nodes[u]['pos'], self.G.nodes[v]['pos'])
             vw = (self.G.nodes[u]['pos'], self.G.nodes[w]['pos'])
-            self.G.add_node(u, pos = ((m+1)/2., a*(np.sqrt(3.)/2.)*(m+1), z))
             self.G.add_edge(u, v, slope=uv)
             self.G.add_edge(u, w, slope=vw)
 
@@ -392,7 +408,7 @@ class networkx_square(networkx_crystal, object):
                 dict_d[(n, m)] = np.linalg.norm(p-q)
 
         for nm in dict_d:
-            if dict_d[nm] < =  threshold:
+            if dict_d[nm] <=  threshold:
                 dnm = [self.G.nodes[nm[0]]['pos'], self.G.nodes[nm[1]]['pos']]
                 self.G.add_edge(*nm, slope=dnm)
 
@@ -412,12 +428,11 @@ class networkx_trigonal_planar(networkx_crystal, object):
         u = (0, a*(m+1))
         v = (0, a*m)
         w = (1, a*m)
-
         ps = np.array([(m+1)/2., a*(np.sqrt(3.)/2.)*(m+1)])
-        uv = (self.G.nodes[u]['pos'], self.G.nodes[v]['pos'])
-        uw = (self.G.nodes[u]['pos'], self.G.nodes[w]['pos'])
 
         self.G.add_node(u, pos=ps)
+        uv = (self.G.nodes[u]['pos'], self.G.nodes[v]['pos'])
+        uw = (self.G.nodes[u]['pos'], self.G.nodes[w]['pos'])
         self.G.add_edge(u, v, slope=uv)
         self.G.add_edge(u, w, slope=uw)
 
@@ -427,13 +442,13 @@ class networkx_trigonal_planar(networkx_crystal, object):
             v = (p+1, a*m)
             w = (p+2, a*m)
             x = (p, a*(m+1))
-
             ps = np.array([((p+1)+(m+1)/2.), a*(np.sqrt(3.)/2.)*(m+1)])
+
+            self.G.add_node(u, pos=ps)
+
             uv = (self.G.nodes[u]['pos'], self.G.nodes[v]['pos'])
             uw = (self.G.nodes[u]['pos'], self.G.nodes[w]['pos'])
             ux = (self.G.nodes[u]['pos'], self.G.nodes[x]['pos'])
-
-            self.G.add_node(u, pos=ps)
             self.G.add_edge(u, v, slope=uv)
             self.G.add_edge(u, w, slope=uw)
             self.G.add_edge(u, x, slope=ux)

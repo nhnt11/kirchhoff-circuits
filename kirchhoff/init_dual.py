@@ -3,7 +3,7 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-07T00:32:39+01:00
+# @Last modified time: 2021-11-07T12:41:20+01:00
 # @License: MIT
 
 import networkx as nx
@@ -77,7 +77,7 @@ class networkx_dual(init_crystal.networkx_crystal, object):
     Attributes
     ----------
 
-        layer (list): List of the mutlilayered circuits.
+        layer (list): List of the graphs contained in the multilayer network.
         lattice_constant (float): Scale for the spacing between the networks.
         translation_length (float): Scale for the translation difference between the multiple networks.
 
@@ -208,7 +208,7 @@ class networkx_dual(init_crystal.networkx_crystal, object):
 
             for i in range(2):
                 n0 = E[i][0]
-                n1  E[i][1]
+                n1 = E[i][1]
                 aff[i][n0].append(a[-(i+1)])
                 aff[i][n1].append(a[-(i+1)])
 
@@ -361,7 +361,6 @@ class networkx_dual_simple(networkx_dual, object):
             list: The edge affiliation list of the dual cubic lattice.
 
         """
-        V, G, H = args
         rv_aux = []
         rp_aux = []
         adj = []
@@ -439,7 +438,7 @@ class networkx_dual_diamond(networkx_dual, object):
         unit_cell = ic.diamond_unit_cell()
 
         pg = [0, 0, 0]
-        G_aux = self.periodic_cell_structure_offset(unit_cell, num_periods, p0)
+        G_aux = self.periodic_cell_structure_offset(unit_cell, num_periods, pg)
 
         hg = [1, 0, 0]
         H_aux = self.periodic_cell_structure_offset(unit_cell, num_periods, hg)

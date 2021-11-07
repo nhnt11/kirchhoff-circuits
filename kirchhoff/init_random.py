@@ -3,11 +3,11 @@
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
 # @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-06T19:36:46+01:00
+# @Last modified time: 2021-11-07T12:18:56+01:00
 # @License: MIT
 
 import networkx as nx
-import scipy as sc
+import numpy as np
 from scipy.spatial import Voronoi
 import random as rd
 
@@ -79,7 +79,7 @@ class networkx_random():
         for i in intervall:
             for j in intervall:
                 if (i!=0 or j!=0):
-                    points_matrix = sc.concatenate((points_matrix, points+(i*sl, j*sl)))
+                    points_matrix = np.concatenate((points_matrix, points+(i*sl, j*sl)))
 
         return points_matrix
 
@@ -101,7 +101,7 @@ class networkx_random():
             for j in intervall:
                 for k in intervall:
                     if (i!=0 or j!=0 or k!=0):
-                        points_matrix=sc.concatenate((points_matrix, points+(i*sl, j*sl, k*sl)))
+                        points_matrix=np.concatenate((points_matrix, points+(i*sl, j*sl, k*sl)))
 
         return points_matrix
     # construct random 3d graph, confined in a box
@@ -173,7 +173,7 @@ class networkx_voronoi_planar(networkx_random, object):
 
             XY.append((x, y))
         self.XY = XY
-        XY = self.mirror_boxpoints(sc.array(XY), sidelength)
+        XY = self.mirror_boxpoints(np.array(XY), sidelength)
         self.XY_periodic=XY
         V = Voronoi(XY)
 
@@ -197,18 +197,18 @@ class networkx_voronoi_planar(networkx_random, object):
          # lattice
         faces = []
         for j, i in enumerate(V.point_region):
-            faces.append(sc.asarray(V.regions[i]))
+            faces.append(np.asarray(V.regions[i]))
 
             if j == number-1:
                 break
         #use periodic kernel to construct the correponding network
-        faces = sc.asarray(faces)
+        faces = np.asarray(faces)
         f = faces[0]
 
         for i in range(len(faces[:])):
             if i+1 == len(faces[:]):
                 break
-            f = sc.concatenate((f,faces[i+1]))
+            f = np.concatenate((f,faces[i+1]))
         for i in faces:
             for j in i:
                 v = V.vertices[j]
@@ -217,8 +217,8 @@ class networkx_voronoi_planar(networkx_random, object):
         k = 0
         for i in V.ridge_vertices:
 
-            mask = sc.in1d(i,f)
-            if sc.all( mask == True ):
+            mask = np.in1d(i,f)
+            if np.all( mask == True ):
 
                 for l in range(len(i)):
                     h = len(i)-1
@@ -277,7 +277,7 @@ class networkx_voronoi_volume(networkx_random, object):
 
             XYZ.append((x, y, z))
         self.XYZ = XYZ
-        XYZ = self.mirror_cubepoints(sc.array(XYZ), sidelength)
+        XYZ = self.mirror_cubepoints(np.array(XYZ), sidelength)
         self.XYZ_periodic = XYZ
         V = Voronoi(XYZ)
 
@@ -301,18 +301,18 @@ class networkx_voronoi_volume(networkx_random, object):
          # voronoi lattice
         faces = []
         for j, i in enumerate(V.point_region):
-            faces.append(sc.asarray(V.regions[i]))
+            faces.append(np.asarray(V.regions[i]))
 
             if j == number-1:
                 break
         #use periodic kernel to construct the correponding network
-        faces = sc.asarray(faces)
+        faces = np.asarray(faces)
         f = faces[0]
 
         for i in range(len(faces[:])):
             if i+1 == len(faces[:]):
                 break
-            f=sc.concatenate((f, faces[i+1]))
+            f=np.concatenate((f, faces[i+1]))
         for i in faces:
             for j in i:
                 v = V.vertices[j]
@@ -321,8 +321,8 @@ class networkx_voronoi_volume(networkx_random, object):
         k = 0
         for i in V.ridge_vertices:
 
-            mask = sc.in1d(i, f)
-            if sc.all( mask == True ):
+            mask = np.in1d(i, f)
+            if np.all( mask == True ):
 
                 for l in range(len(i)):
                     h = len(i)-1
