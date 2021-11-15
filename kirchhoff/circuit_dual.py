@@ -352,7 +352,7 @@ class dual_circuit():
             self.layer[i].clipp_graph()
 
     # output
-    def plot_circuit(self, **kwargs):
+    def plot_circuit(self, *args, **kwargs):
 
         """
         Use Plotly.GraphObjects to create interactive plots that have
@@ -364,7 +364,6 @@ class dual_circuit():
             plotly.graph_objects.Figure: A plotly figure displaying the circuit.
 
         """
-
-        fig = dx.plot_networkx_dual(self, **kwargs)
+        fig = dx.plot_networkx_dual(self, *args, **kwargs)
 
         return fig

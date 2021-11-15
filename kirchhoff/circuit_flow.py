@@ -544,7 +544,9 @@ class flow_circuit(circuit, object):
             'edge_data': E,
             'node_data': V
         }
-
-        fig = dx.plot_networkx(self.G, **opt.update(kwargs))
+        if type(kwargs) != None:
+            opt.update(kwargs)
+        # print(opt)
+        fig = dx.plot_networkx(self.G, **opt)
 
         return fig

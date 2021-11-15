@@ -59,13 +59,14 @@ def plot_networkx(input_graph, **kwargs):
 
     return fig
 
-def plot_networkx_dual(dual_circuit, **kwargs):
+def plot_networkx_dual(dual_circuit, *args, **kwargs):
     """
     Return an interactive network plot, which shows the internal edge and node
      data via hover and text for a multilayer system.
 
     Args:
         dual_circuit (dual_circuit): A dual_circuit object.
+        args (list): A list for keywoprd data for display.
         kwargs (dictionary): A dictionary for plotly keywords customizing the plots' layout.
 
     Returns:
@@ -78,7 +79,7 @@ def plot_networkx_dual(dual_circuit, **kwargs):
         'color_nodes':['#6aa84f', '#a845b5'],
         'color_edges':['#2BDF94', '#c762d4'],
         'markersize': [2, 2],
-        'linewidth': [5, 5]
+        'linewidth': [10, 10]
     }
 
     for k, v in kwargs.items():
@@ -87,11 +88,11 @@ def plot_networkx_dual(dual_circuit, **kwargs):
 
     fig = go.Figure()
 
-    for i, K in enumerate(dual_graph.layer):
+    for i, K in enumerate(dual_circuit.layer):
 
         options['network_id'] = i
-        node_data = K.get_nodes_data(**kwargs)
-        edges_data = K.get_edges_data(**kwargs)
+        node_data = K.get_nodes_data(*args)
+        edges_data = K.get_edges_data(*args)
 
         add_traces_nodes(fig, options, K.G, node_data)
         add_traces_edges(fig, options, K.G, edges_data)
@@ -125,6 +126,7 @@ def add_traces_edges(fig, options, input_graph, extra_data):
         'color': options['color_edges'][idx],
         'linewidth': options['linewidth'][idx]
     }
+
     edge_invd_traces = get_edge_invd_traces(input_graph, extra_data, **optI)
 
     for eit in edge_invd_traces:
@@ -283,8 +285,10 @@ def get_edge_invd_traces(input_graph, extra_data,  **kwargs):
 
     options = {
         'color':'#888',
+        'width': 2,
         # 'dim':3
     }
+    # options['width'] = kwargs['linewidth']
     dim = 3
     for k, v in kwargs.items():
         if k in options:
@@ -295,10 +299,18 @@ def get_edge_invd_traces(input_graph, extra_data,  **kwargs):
     if type(options['color']) != str:
         colorful = True
         cmax = np.max(options['color'])
-        cmin = np.min(options['color'])
-        pc = plotly.colors.sample_colorscale('plasma', options['color'],
-          low=cmin, high=cmax)
+        # cmin = np.min(options['color'])
+        if cmax == 0:
+            cmax=1.
+
+        pc = plotly.colors.sample_colorscale('plasma', options['color']/cmax)
         options['color'] = pc
+
+    weighted = False
+    if 'linewidth' in kwargs.keys():
+        options['width']=kwargs['linewidth']
+    if type(options['width']) != int:
+        weighted = True
 
     pos = nx.get_node_attributes(input_graph, 'pos')
     if len(list(pos.values())[0]) != dim:
@@ -311,16 +323,14 @@ def get_edge_invd_traces(input_graph, extra_data,  **kwargs):
     # add new traces
     trace_list = []
     aux_option = dict(options)
+
     for i, edge in enumerate(E):
-
-        # aux_option['width'] = options['linewidth']
-        aux_option['width'] = 2
-
-        if 'weight' in extra_data:
-            aux_option['width'] = extra_data['weight'][i]
 
         if colorful:
             aux_option['color'] = options['color'][i]
+
+        if weighted:
+            aux_option['width'] = options['width'][i]
 
         trace = get_line_from_template(dim, aux_option)
         XYZ_0 = input_graph.nodes[edge[0]]['pos']
