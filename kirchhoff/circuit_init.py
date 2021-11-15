@@ -306,12 +306,12 @@ class circuit:
         """
 
         self.set_network_attributes()
-        tolerance = 0.000001
+        tolerance = 0.00001
         # check value consistency
         S = nx.get_node_attributes(self.G, 'source').values()
         sources = np.fromiter(S, float)
 
-        assert(np.sum(sources) > tolerance)
+        assert(np.sum(sources) < tolerance)
 
         A1 = 'set_source_landscape(): '
         A2 = ' is set and consistent :)'
@@ -324,12 +324,12 @@ class circuit:
 
         """
         self.set_network_attributes()
-        tolerance = 0.000001
+
         # check value consistency
         K = nx.get_edge_attributes(self.G, 'conductivity').values()
         conductivities = np.fromiter(K, float)
 
-        assert(len(np.where(conductivities <=0 )[0]) != 0)
+        assert(len(np.where(conductivities <=0 )[0]) == 0)
 
         A1 = 'set_plexus_landscape(): '
         A2 = ' is set and consistent :)'
@@ -430,11 +430,14 @@ class circuit:
             'node_data': V
         }
 
-        fig=dx.plot_networkx(   self.G, **options.update(kwargs))
+        if type(kwargs) != None:
+            options.update(kwargs)
+
+        fig=dx.plot_networkx(self.G, **options)
 
         return fig
 
-    def get_nodes_data(self, *args ):
+    def get_nodes_data(self, *args):
         """
         Get internal nodal DataFrame columns by keywords.
 
