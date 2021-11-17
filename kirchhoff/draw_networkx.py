@@ -34,6 +34,7 @@ def plot_networkx(input_graph, **kwargs):
         'network_id':0,
         'color_nodes':['#a845b5'],
         'color_edges':['#c762d4'],
+        'colormap':['plasma'],
         'markersize': [2],
         'linewidth': [5]
     }
@@ -78,6 +79,7 @@ def plot_networkx_dual(dual_circuit, *args, **kwargs):
         'network_id':0,
         'color_nodes':['#6aa84f', '#a845b5'],
         'color_edges':['#2BDF94', '#c762d4'],
+        'colormap':['plasma', 'plasma'],
         'markersize': [2, 2],
         'linewidth': [10, 10]
     }
@@ -118,13 +120,15 @@ def add_traces_edges(fig, options, input_graph, extra_data):
     idx = options['network_id']
 
     optM = {
-        'color': options['color_edges'][idx]
+        'color': options['color_edges'][idx],
+        'colormap': options['colormap'][idx]
     }
     edge_mid_trace = get_edge_mid_trace(input_graph, extra_data, **optM)
 
     optI = {
         'color': options['color_edges'][idx],
-        'linewidth': options['linewidth'][idx]
+        'linewidth': options['linewidth'][idx],
+        'colormap': options['colormap'][idx]
     }
 
     edge_invd_traces = get_edge_invd_traces(input_graph, extra_data, **optI)
@@ -148,8 +152,13 @@ def add_traces_nodes(fig,  options,  input_graph, extra_data):
     """
 
     idx = options['network_id']
+    optN = {
+        'color': options['color_nodes'][idx],
+        'markersize': options['markersize'][idx],
+        'colormap': options['colormap'][idx]
+    }
 
-    node_trace = get_node_trace( input_graph,  extra_data,  color  =  options['color_nodes'][idx],  markersize  =  options['markersize'][idx] )
+    node_trace = get_node_trace( input_graph,  extra_data, **optN )
     fig.add_trace( node_trace)
 
 #auxillary functions generating traces for nodes and edges
@@ -182,8 +191,8 @@ def get_edge_mid_trace(input_graph, extra_data,  **kwargs):
         dim = len(list(pos.values())[0])
 
     E = input_graph.edges()
-    if 'edge_list' in options:
-        E = options['edge_list']
+    # if 'edge_list' in options:
+    #     E = options['edge_list']
 
     middle_node_trace = get_hover_scatter_from_template(dim, options)
 
@@ -219,12 +228,14 @@ def set_hover_info(trace, XYZ, extra_data):
         trace[t] = XYZ[i]
 
     if len(extra_data.keys())!= 0:
-        data = [ list(extra_data[c]) for c in extra_data.columns]
+        data = [list(extra_data[c]) for c in extra_data.columns]
         iter = list(zip(*data))
         text = [create_tag(vals, extra_data.columns ) for vals in iter]
         trace['text'] = text
     else:
         trace['hoverinfo'] = 'none'
+
+    trace['hoverlabel'] = dict(bgcolor="white")
 
 def get_hover_scatter_from_template(dim, options):
 
@@ -303,7 +314,7 @@ def get_edge_invd_traces(input_graph, extra_data,  **kwargs):
         if cmax == 0:
             cmax=1.
 
-        pc = plotly.colors.sample_colorscale('plasma', options['color']/cmax)
+        pc = plotly.colors.sample_colorscale(kwargs['colormap'], options['color']/cmax)
         options['color'] = pc
 
     weighted = False
