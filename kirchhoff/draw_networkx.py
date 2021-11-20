@@ -36,7 +36,8 @@ def plot_networkx(input_graph, **kwargs):
         'color_edges':['#c762d4'],
         'colormap':['plasma'],
         'markersize': [2],
-        'linewidth': [5]
+        'linewidth': [5],
+        'axis': True
     }
 
     node_data = pd.DataFrame()
@@ -56,7 +57,36 @@ def plot_networkx(input_graph, **kwargs):
     add_traces_nodes(fig, options, input_graph, node_data)
     add_traces_edges(fig, options, input_graph, edge_data)
 
-    fig.update_layout(showlegend=False)
+    new_layout = {
+        'showlegend': False,
+        'autosize': True,
+        'margin': {'l': 0, 'r': 0, 't': 0, 'b': 0},
+        'scene': dict(aspectmode="data",)
+    }
+    if not options['axis']:
+        new_layout.update(
+            {'scene': dict(
+                    xaxis_title='',
+                    yaxis_title='',
+                    zaxis_title='',
+                    xaxis = dict(
+                                showbackground=False,
+                                showticklabels=False
+                        ),
+                    yaxis = dict(
+                                showbackground=False,
+                                showticklabels=False
+                        ),
+                    zaxis = dict(
+                                showbackground=False,
+                                showticklabels=False
+                        ),
+                    aspectmode="data",
+                )
+            }
+        )
+
+    fig.update_layout(**new_layout)
 
     return fig
 
@@ -81,7 +111,8 @@ def plot_networkx_dual(dual_circuit, *args, **kwargs):
         'color_edges':['#2BDF94', '#c762d4'],
         'colormap':['plasma', 'plasma'],
         'markersize': [2, 2],
-        'linewidth': [10, 10]
+        'linewidth': [10, 10],
+        'axis': True
     }
 
     for k, v in kwargs.items():
@@ -99,7 +130,40 @@ def plot_networkx_dual(dual_circuit, *args, **kwargs):
         add_traces_nodes(fig, options, K.G, node_data)
         add_traces_edges(fig, options, K.G, edges_data)
 
-    fig.update_layout(showlegend=False)
+    new_layout = {
+        'showlegend': False,
+        'autosize': True,
+        'margin': {'l': 0, 'r': 0, 't': 0, 'b': 0},
+        'scene_camera': dict(eye=dict(x=2, y=2, z=0.9))
+    }
+    if not options['axis']:
+        new_layout.update(
+            {'scene': dict(
+                    xaxis_title='',
+                    yaxis_title='',
+                    zaxis_title='',
+                    xaxis = dict(
+                                showbackground=False,
+                                showticklabels=False,
+                                autorange=True,
+                        ),
+                    yaxis = dict(
+                                showbackground=False,
+                                showticklabels=False,
+                                autorange=True,
+                        ),
+                    zaxis = dict(
+                                showbackground=False,
+                                showticklabels=False,
+                                autorange=True,
+                        ),
+                    aspectmode="data",
+                )
+            }
+        )
+
+    fig.update_layout(**new_layout)
+
 
     return fig
 
@@ -495,13 +559,13 @@ def get_node_scatter(node_xyz, extra_data, options):
 
     if len(extra_data.keys()) != 0:
         mode = 'text'
-        data = [ list(extra_data[c]) for c in extra_data.columns]
+        data = [list(extra_data[c]) for c in extra_data.columns]
         iter = list(zip(*data))
         hover = [create_tag(vals, extra_data.columns ) for vals in iter]
 
     if options['dim'] == 3:
         node_trace = go.Scatter3d(
-        x=node_xyz[0],  y=node_xyz[1], z=node_xyz[2],
+        x=node_xyz[0], y=node_xyz[1], z=node_xyz[2],
         mode='markers',
         hoverinfo=mode,
         hovertext=hover,
@@ -512,7 +576,7 @@ def get_node_scatter(node_xyz, extra_data, options):
         )
     else:
         node_trace = go.Scatter(
-        x=node_xyz[0],  y=node_xyz[1],
+        x=node_xyz[0], y=node_xyz[1],
         mode='markers',
         hoverinfo=mode,
         hovertext=hover,
