@@ -5,15 +5,15 @@
 # @Last modified by:    Felix Kramer
 # @Last modified time: 2021-09-05T00:06:04+02:00
 # @License: MIT
-
 import setuptools
+
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="kirchhoff",
-    version="0.2.0",
+    version="0.2.1",
     author="felixk1990",
     author_email="felixuwekramer@protonmail.com",
     description="Collection of routines for creation and manipulation of Kirchhoff circuits based on resistor-only networks, together with 2D/3D spatial embeddings. ",
