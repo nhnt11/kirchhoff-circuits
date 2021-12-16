@@ -47,7 +47,7 @@ def init_dual_catenation(dual_type, num_periods):
 
     """
     Initialize a dual spatially embedded multilayer graph, with internal graphs based on
-    simple catenatednetwork skeletons.
+    simple catenated network skeletons.
 
     Args:
         dual_type (string): The type of dual skeleton (simple, diamond, laves, catenation).
@@ -59,6 +59,7 @@ def init_dual_catenation(dual_type, num_periods):
     """
     plexus_mode={
         'catenation':networkx_dual_catenation,
+        'crossMesh':networkx_dual_crossMesh,
     }
 
     if  dual_type in plexus_mode:
@@ -711,5 +712,60 @@ class networkx_dual_catenation(networkx_dual, object):
 
             G1.nodes[n]['pos'] = self.lattice_constant*p2
 
+
+        self.layer = [G1,G2]
+
+class networkx_dual_crossMesh(networkx_dual, object):
+
+    """
+    A class for spatial, dual Laves circuits.
+
+    Attributes
+    ----------
+
+        layer (list): List of the mutlilayered circuits.
+        lattice_constant (float): Scale for the spacing between the networks.
+
+    """
+    def __init__(self, num_periods):
+
+        """
+        A constructor for multilayer circuit catenation objects, setting default values
+         for the interal graph objects and geometry
+        """
+
+        super(networkx_dual_crossMesh, self).__init__()
+        self.lattice_constant = 1
+        self.translation_length = 1
+        self.dual_crossMesh(num_periods)
+
+    def dual_crossMesh(self, num_periods):
+
+        """
+        Set internal networkx structure, dual crossed_mesh.
+
+        Args:
+            num_periods (int): Repetition number of the unit tile.
+
+        """
+        num_periods1X, num_periods1Y, num_periods2X, num_periods2Y =num_periods
+
+        np1 = [num_periods1X, num_periods1Y]
+        np2 = [num_periods2X, num_periods2Y]
+
+        N = [np1, np2]
+        ic = init_crystal.networkx_square
+        G1, G2 = [nx.Graph(ic(i).G) for i in N]
+
+        theta = np.pi/2.
+        rot_mat = np.array(((1, 0, 0), (0, np.cos(theta), -np.sin(theta)),
+               (0, np.sin(theta), np.cos(theta)) ))
+
+        for n in G1.nodes():
+            p = np.array(G1.nodes[n]['pos'])
+            p1 = np.dot(rot_mat, p)
+            p2 = np.add([0.5, 0.5, -0.5], p1 )
+
+            G1.nodes[n]['pos'] = self.lattice_constant*p2
 
         self.layer = [G1,G2]

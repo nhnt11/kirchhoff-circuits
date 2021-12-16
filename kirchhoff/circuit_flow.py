@@ -95,7 +95,7 @@ def setup_default_flow_circuit(skeleton=None):
 
     return kirchhoff_graph
 
-def setup_flow_circuit(skeleton=None, source=None, plexus=None):
+def setup_flow_circuit(skeleton=None, sourceMode=None, plexusMode=None, **kwargs):
 
     """
     Initialize a flow circuit from a given networkx graph and dictioinary of boundary conditions.
@@ -111,8 +111,8 @@ def setup_flow_circuit(skeleton=None, source=None, plexus=None):
     """
 
     kirchhoff_graph = initialize_flow_circuit_from_networkx(skeleton)
-    kirchhoff_graph.set_source_landscape(source)
-    kirchhoff_graph.set_plexus_landscape(plexus)
+    kirchhoff_graph.set_source_landscape(sourceMode, **kwargs)
+    kirchhoff_graph.set_plexus_landscape(plexusMode, **kwargs)
 
     return kirchhoff_graph
 # class flow_circuit(kirchhoff_init.circuit, object):

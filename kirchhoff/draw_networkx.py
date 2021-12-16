@@ -65,25 +65,17 @@ def plot_networkx(input_graph, **kwargs):
     }
     if not options['axis']:
         new_layout.update(
-            {'scene': dict(
-                    xaxis_title='',
-                    yaxis_title='',
-                    zaxis_title='',
-                    xaxis = dict(
-                                showbackground=False,
-                                showticklabels=False
-                        ),
-                    yaxis = dict(
-                                showbackground=False,
-                                showticklabels=False
-                        ),
-                    zaxis = dict(
-                                showbackground=False,
-                                showticklabels=False
-                        ),
-                    aspectmode="data",
-                )
-            }
+            dict(
+                plot_bgcolor="#FFF",  # Sets background color to white
+                xaxis=dict(
+                    linecolor="#BCCCDC",  # Sets color of X-axis line
+                    showgrid=False  # Removes X-axis grid lines
+                ),
+                yaxis=dict(
+                    linecolor="#BCCCDC",  # Sets color of Y-axis line
+                    showgrid=False,  # Removes Y-axis grid lines
+                ),
+            )
         )
 
     fig.update_layout(**new_layout)
@@ -112,7 +104,7 @@ def plot_networkx_dual(dual_circuit, *args, **kwargs):
         'colormap':['plasma', 'plasma'],
         'markersize': [2, 2],
         'linewidth': [10, 10],
-        'axis': True
+        'axis': True,
     }
 
     for k, v in kwargs.items():
@@ -134,7 +126,8 @@ def plot_networkx_dual(dual_circuit, *args, **kwargs):
         'showlegend': False,
         'autosize': True,
         'margin': {'l': 0, 'r': 0, 't': 0, 'b': 0},
-        'scene_camera': dict(eye=dict(x=2, y=2, z=0.9))
+        'scene_camera': dict(eye=dict(x=2, y=2, z=0.9)),
+        'scene': dict(aspectmode="data"),
     }
     if not options['axis']:
         new_layout.update(
@@ -143,17 +136,17 @@ def plot_networkx_dual(dual_circuit, *args, **kwargs):
                     yaxis_title='',
                     zaxis_title='',
                     xaxis = dict(
-                                showbackground=False,
+                                showbackground=True,
                                 showticklabels=False,
                                 autorange=True,
                         ),
                     yaxis = dict(
-                                showbackground=False,
+                                showbackground=True,
                                 showticklabels=False,
                                 autorange=True,
                         ),
                     zaxis = dict(
-                                showbackground=False,
+                                showbackground=True,
                                 showticklabels=False,
                                 autorange=True,
                         ),
