@@ -10,6 +10,7 @@
 import networkx as nx
 import numpy as np
 import pandas as pd
+from dataclasses import dataclass, field
 
 # custom embeddings/architectures
 import kirchhoff.init_crystal as init_crystal
@@ -17,23 +18,12 @@ import kirchhoff.init_random as init_random
 # custom output functions
 import kirchhoff.draw_networkx as dx
 
+def set_info(input_graph, grid_type):
 
-def initialize_circuit_from_networkx(input_graph):
-    """
-    Initialize a kirchhoff circuit from a networkx graph.
+    e = nx.number_of_edges(input_graph)
+    n = nx.number_of_nodes(input_graph)
 
-    Args:
-        input_graph (nx.Graph): A simple networkx graph.
-
-    Returns:
-        circuit: A kirchhoff graph.
-
-    """
-
-    kirchhoff_graph = circuit()
-    kirchhoff_graph.default_init(input_graph)
-
-    return kirchhoff_graph
+    return f'type: {grid_type}, #edges: {e}, #nodes: {n}'
 
 def initialize_circuit_from_crystal(crystal_type='default', periods=1):
 
@@ -47,9 +37,9 @@ def initialize_circuit_from_crystal(crystal_type='default', periods=1):
         circuit: A kirchhoff graph.
 
     """
-    kirchhoff_graph = circuit()
     input_graph = init_crystal.init_graph_from_crystal(crystal_type, periods)
-    kirchhoff_graph.default_init(input_graph)
+    kirchhoff_graph = Circuit(input_graph)
+    kirchhoff_graph.info = set_info(input_graph, crystal_type)
 
     return kirchhoff_graph
 
@@ -66,13 +56,14 @@ def initialize_circuit_from_random(random_type='default', periods=10, sidelength
 
     """
 
-    kirchhoff_graph = circuit()
     input_graph = init_random.init_graph_from_random(random_type, periods, sidelength)
-    kirchhoff_graph.default_init(input_graph)
+    kirchhoff_graph = Circuit(input_graph)
+    kirchhoff_graph.info = set_info(input_graph, random_type)
 
     return kirchhoff_graph
 
-class circuit:
+@dataclass
+class Circuit:
 
     """
     A class of linear circuits (for lumped parameter modelling).
@@ -87,18 +78,38 @@ class circuit:
 
     """
 
-    def __init__(self):
+    G: nx.Graph = field(default_factory=nx.Graph, repr=False)
+    info: str = 'unknown'
+    scales: dict = field(default_factory=dict, repr=False, init=False)
+    graph: dict = field(default_factory=dict, repr=False, init=False)
+    nodes: pd.DataFrame = field(default_factory=pd.DataFrame, repr=False, init=False)
+    edges: pd.DataFrame = field(default_factory=pd.DataFrame, repr=False, init=False)
 
-        """
-        A constructor for circuit objects, initializing graphs, graph matrices
-        and data containers
-        """
+    def __post_init__(self):
+
+        self.init_circuit()
+    # def set_graph_containers(self):
+    #
+    #     """
+    #     Set internal graph containers.
+    #
+    #     """
+    #
+    #     self.H = nx.Graph()
+    #     self.H_C = []
+    #     self.H_J = []
+
+    def init_circuit(self):
+
+        e = nx.number_of_edges(self.G)
+        n = nx.number_of_nodes(self.G)
+        self.info = set_info(self.G, 'custom')
 
         self.scales={
-            'conductance': 1,
-            'flow': 1,
-            'length': 1
-        }
+                'conductance': 1,
+                'flow': 1,
+                'length': 1
+            }
 
         self.graph={
             'source_mode': '',
@@ -122,55 +133,27 @@ class circuit:
             'label': [],
         }
         )
-        self.set_graph_containers()
+        # self.set_graph_containers()
+        self.default_init()
 
-        self.draw_weight_scaling=1.
-
-    def set_graph_containers(self):
-
-        """
-        Set internal graph containers.
-
-        """
-
-        self.G = nx.DiGraph()
-        self.H = nx.Graph()
-        self.H_C = []
-        self.H_J = []
-
-        self.list_graph_nodes = []
-        self.list_graph_edges = []
-
-    def default_init(self, input_graph):
+    def default_init(self):
 
         """
         Initialize the default setting of a circuit, by taking a networkx graph
         and setting containers
 
-        Args:
-            input_graph (nx.Graph): A networkx graph which is used as baseline.
-
         """
+        self.draw_weight_scaling = 1.
 
         options={
             'first_label': 0,
             'ordering': 'default'
             }
-        self.G = nx.convert_node_labels_to_integers(input_graph, **options)
-        self.initialize_circuit()
+        self.G = nx.convert_node_labels_to_integers(self.G, **options)
+        # self.initialize_circuit()
 
         self.list_graph_nodes = list(self.G.nodes())
         self.list_graph_edges = list(self.G.edges())
-
-    def initialize_circuit(self):
-
-        """
-        Initialize internal curcuit matrices and vectors.
-
-        """
-
-        e = self.G.number_of_edges()
-        n = self.G.number_of_nodes()
 
         init_val = ['#269ab3',0,0,5]
         init_attributes = ['color', 'source', 'potential', 'conductivity']
@@ -178,14 +161,21 @@ class circuit:
         for i, val in enumerate(init_val):
             nx.set_node_attributes(self.G, val , name=init_attributes[i])
 
+        E = self.G.number_of_edges()
+        N = self.G.number_of_nodes()
+
         for k in self.nodes:
-            self.nodes[k] = np.zeros(n)
+            if k == 'label':
+                self.nodes[k] = [n for n in self.list_graph_nodes]
+            else:
+                self.nodes[k] = np.zeros(N)
 
         for k in self.edges:
-            self.edges[k] = np.zeros(e)
+            if k == 'label':
+                self.edges[k] = [e for e in self.list_graph_edges]
+            else:
+                self.edges[k] = np.zeros(E)
 
-        self.set_network_attributes()
-        print('circuit(): initialized and ready for (some) action :)')
 
     #get incidence atrix and its transpose
     def get_incidence_matrices(self):
@@ -227,42 +217,42 @@ class circuit:
             self.G.edges[e]['label'] = j
 
     # clipp small edges & translate conductance into general edge weight
-    def clipp_graph(self):
-
-        """
-        Prune the internal graph and generate a new internal variable
-        represting the pruned based on an interanl threshold value.
-
-        """
-
-        #cut out edges which lie beneath a certain threshold value and export
-         # this clipped structure
-        self.set_network_attributes()
-
-        for e in self.list_graph_edges:
-            if self.G.edges[e]['conductivity'] > self.threshold:
-                self.H.add_edge(*e)
-                for k in self.G.edges[e].keys():
-                    self.H.edges[e][k] = self.G.edges[e][k]
-
-        self.list_pruned_nodes = list(self.H.nodes())
-        self.list_pruned_edges = list(self.H.edges())
-
-        for n in list_pruned_nodes:
-            for k in self.G.nodes[n].keys():
-                self.H.nodes[n][k] = self.G.nodes[n][k]
-            self.H_J.append(self.G.nodes[n]['source'])
-        for e in list_pruned_edges:
-            self.H_C.append(self.H.edges[e]['conductivity'])
-
-        self.H_C = np.asarray(self.H_C)
-        self.H_J = np.asarray(self.H_J)
-
-        assert( len(list(self.H.nodes())) == 0)
+    # def clipp_graph(self):
+    #
+    #     """
+    #     Prune the internal graph and generate a new internal variable
+    #     represting the pruned based on an interanl threshold value.
+    #
+    #     """
+    #
+    #     #cut out edges which lie beneath a certain threshold value and export
+    #      # this clipped structure
+    #     self.set_network_attributes()
+    #
+    #     for e in self.list_graph_edges:
+    #         if self.G.edges[e]['conductivity'] > self.threshold:
+    #             self.H.add_edge(*e)
+    #             for k in self.G.edges[e].keys():
+    #                 self.H.edges[e][k] = self.G.edges[e][k]
+    #
+    #     self.list_pruned_nodes = list(self.H.nodes())
+    #     self.list_pruned_edges = list(self.H.edges())
+    #
+    #     for n in list_pruned_nodes:
+    #         for k in self.G.nodes[n].keys():
+    #             self.H.nodes[n][k] = self.G.nodes[n][k]
+    #         self.H_J.append(self.G.nodes[n]['source'])
+    #     for e in list_pruned_edges:
+    #         self.H_C.append(self.H.edges[e]['conductivity'])
+    #
+    #     self.H_C = np.asarray(self.H_C)
+    #     self.H_J = np.asarray(self.H_J)
+    #
+    #     assert( len(list(self.H.nodes())) == 0)
 
     def calc_root_incidence(self):
         """
-        Find the incidence for a system with binary periphehal nodes.
+        Find the incidence for a system with binary-type periphehal nodes.
 
         Returns:
             list: A list of nodes adjacent to the source.
@@ -433,7 +423,7 @@ class circuit:
         if type(kwargs) != None:
             options.update(kwargs)
 
-        fig=dx.plot_networkx(self.G, **options)
+        fig = dx.plot_networkx(self.G, **options)
 
         return fig
 

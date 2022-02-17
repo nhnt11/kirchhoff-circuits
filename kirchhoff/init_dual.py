@@ -11,7 +11,7 @@ import numpy as np
 import kirchhoff.init_crystal
 from scipy.spatial import Voronoi
 import kirchhoff.init_crystal  as init_crystal
-
+from dataclasses import dataclass, field
 
 def init_dual_minsurf_graphs(dual_type, num_periods):
 
@@ -24,14 +24,15 @@ def init_dual_minsurf_graphs(dual_type, num_periods):
         num_periods (int): Repetition number of the lattice's unit cell.
 
     Returns:
-        networkx_dual: A dual networkx object.
+        NetworkxDual: A dual networkx object.
 
     """
 
     plexus_mode = {
-        'simple': networkx_dual_simple,
-        'diamond':networkx_dual_diamond,
-        'laves':networkx_dual_laves,
+        'default': NetworkxDualSimple,
+        'simple': NetworkxDualSimple,
+        'diamond':NetworkxDualDiamond,
+        'laves':NetworkxDualLaves,
     }
 
     if  dual_type in plexus_mode:
@@ -43,7 +44,7 @@ def init_dual_minsurf_graphs(dual_type, num_periods):
 
     return dual_graph
 
-def init_dual_catenation(dual_type, num_periods):
+def init_dualCatenation(dual_type, num_periods):
 
     """
     Initialize a dual spatially embedded multilayer graph, with internal graphs based on
@@ -54,12 +55,13 @@ def init_dual_catenation(dual_type, num_periods):
         num_periods (int): Repetition number of the lattice's unit cell.
 
     Returns:
-        networkx_dual: A dual networkx object.
+        NetworkxDual: A dual networkx object.
 
     """
     plexus_mode={
-        'catenation':networkx_dual_catenation,
-        'crossMesh':networkx_dual_crossMesh,
+        'default': NetworkxDualCatenation,
+        'catenation': NetworkxDualCatenation,
+        'crossMesh': NetworkxDualCrossMesh,
     }
 
     if  dual_type in plexus_mode:
@@ -70,7 +72,7 @@ def init_dual_catenation(dual_type, num_periods):
 
     return dual_graph
 
-class networkx_dual(init_crystal.networkx_crystal, object):
+class NetworkxDual(init_crystal.NetworkxCrystal):
 
     """
     A base class for spatial, dual circuits.
@@ -89,7 +91,7 @@ class networkx_dual(init_crystal.networkx_crystal, object):
          for the interal graph objects and geometry
         """
 
-        super(networkx_dual, self).__init__()
+        super(NetworkxDual, self).__init__()
         self.layer = [nx.Graph(), nx.Graph()]
         self.lattice_constant = 1
         self.translation_length = 1
@@ -252,7 +254,7 @@ class networkx_dual(init_crystal.networkx_crystal, object):
 
         return adj
 
-class networkx_dual_simple(networkx_dual, object):
+class NetworkxDualSimple(NetworkxDual):
     """
     A class for spatial, dual cubic circuits.
 
@@ -271,12 +273,12 @@ class networkx_dual_simple(networkx_dual, object):
          values for the interal graph objects and geometry
         """
 
-        super(networkx_dual_simple, self).__init__()
+        super(NetworkxDualSimple, self).__init__()
         self.lattice_constant = 1
         self.translation_length = 1
-        self.dual_simple(num_periods)
+        self.dualSimple(num_periods)
 
-    def dual_simple(self, num_periods):
+    def dualSimple(self, num_periods):
 
         """
         Set internal networks structure, dual cubic.
@@ -288,7 +290,7 @@ class networkx_dual_simple(networkx_dual, object):
 
         # create primary point cloud with lattice structure
         # creating voronoi cells, with defined ridge structure
-        ic = init_crystal.networkx_simple(1)
+        ic = init_crystal.NetworkxSimple(1)
         unit_cell = ic.simple_unit_cell()
         self.periodic_cell_structure(unit_cell,num_periods)
         points = [self.G.nodes[n]['pos'] for i, n in enumerate(self.G.nodes())]
@@ -394,7 +396,7 @@ class networkx_dual_simple(networkx_dual, object):
 
         return adj
 
-class networkx_dual_diamond(networkx_dual, object):
+class NetworkxDualDiamond(NetworkxDual):
 
     """
     A class for spatial, dual diamond circuits.
@@ -414,12 +416,12 @@ class networkx_dual_diamond(networkx_dual, object):
          for the interal graph objects and geometry
         """
 
-        super(networkx_dual_diamond, self).__init__()
+        super(NetworkxDualDiamond, self).__init__()
         self.lattice_constant = np.sqrt(3.)/2.
         self.translation_length = 1
-        self.dual_diamond(num_periods)
+        self.dualDiamond(num_periods)
 
-    def dual_diamond(self, num_periods):
+    def dualDiamond(self, num_periods):
 
         """
         Set internal networks structure, dual diamond.
@@ -434,7 +436,7 @@ class networkx_dual_diamond(networkx_dual, object):
         adj_idx = []
         aff = [{}, {}]
 
-        ic = init_crystal.networkx_diamond(1)
+        ic = init_crystal.NetworkxDiamond(1)
         unit_cell = ic.diamond_unit_cell()
 
         pg = [0, 0, 0]
@@ -507,7 +509,7 @@ class networkx_dual_diamond(networkx_dual, object):
 
         return G
 
-class networkx_dual_laves(networkx_dual, object):
+class NetworkxDualLaves(NetworkxDual):
 
     """
     A class for spatial, dual Laves circuits.
@@ -526,13 +528,13 @@ class networkx_dual_laves(networkx_dual, object):
          for the interal graph objects and geometry
         """
 
-        super(networkx_dual_laves, self).__init__()
+        super(NetworkxDualLaves, self).__init__()
         self.lattice_constant = 2.
-        self.dual_laves(num_periods)
+        self.dualLaves(num_periods)
 
     # test new minimal surface graph_sets
 
-    def dual_laves(self, num_periods):
+    def dualLaves(self, num_periods):
 
         """
         Set internal networks structure, dual diamond.
@@ -660,7 +662,7 @@ class networkx_dual_laves(networkx_dual, object):
 
         return G
 
-class networkx_dual_catenation(networkx_dual, object):
+class NetworkxDualCatenation(NetworkxDual):
 
     """
     A class for spatial, dual Laves circuits.
@@ -679,7 +681,7 @@ class networkx_dual_catenation(networkx_dual, object):
          for the interal graph objects and geometry
         """
 
-        super(networkx_dual_catenation, self).__init__()
+        super(NetworkxDualCatenation, self).__init__()
         self.lattice_constant = 1
         self.translation_length = 1
         self.dual_ladder(num_periods)
@@ -698,7 +700,7 @@ class networkx_dual_catenation(networkx_dual, object):
         np2 = [num_periods+1, 1]
 
         N = [np1, np2]
-        ic = init_crystal.networkx_square
+        ic = init_crystal.NetworkxSquare
         G1, G2 = [nx.Graph(ic(i).G) for i in N]
 
         theta = np.pi/2.
@@ -715,7 +717,7 @@ class networkx_dual_catenation(networkx_dual, object):
 
         self.layer = [G1,G2]
 
-class networkx_dual_crossMesh(networkx_dual, object):
+class NetworkxDualCrossMesh(NetworkxDual):
 
     """
     A class for spatial, dual Laves circuits.
@@ -734,12 +736,12 @@ class networkx_dual_crossMesh(networkx_dual, object):
          for the interal graph objects and geometry
         """
 
-        super(networkx_dual_crossMesh, self).__init__()
+        super(NetworkxDualCrossMesh, self).__init__()
         self.lattice_constant = 1
         self.translation_length = 1
-        self.dual_crossMesh(num_periods)
+        self.dualCrossMesh(num_periods)
 
-    def dual_crossMesh(self, num_periods):
+    def dualCrossMesh(self, num_periods):
 
         """
         Set internal networkx structure, dual crossed_mesh.
@@ -754,7 +756,7 @@ class networkx_dual_crossMesh(networkx_dual, object):
         np2 = [num_periods2X, num_periods2Y]
 
         N = [np1, np2]
-        ic = init_crystal.networkx_square
+        ic = init_crystal.NetworkxSquare
         G1, G2 = [nx.Graph(ic(i).G) for i in N]
 
         theta = np.pi/2.

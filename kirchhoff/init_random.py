@@ -10,7 +10,7 @@ import networkx as nx
 import numpy as np
 from scipy.spatial import Voronoi
 import random as rd
-
+from dataclasses import dataclass, field
 
 def init_graph_from_random(random_type, periods, sidelength):
 
@@ -28,9 +28,9 @@ def init_graph_from_random(random_type, periods, sidelength):
     """
 
     choose_constructor_option={
-        'default': networkx_voronoi_planar,
-        'voronoi_planar': networkx_voronoi_planar,
-        'voronoi_volume': networkx_voronoi_volume
+        'default': NetworkxVoronoiPlanar,
+        'voronoi_planar': NetworkxVoronoiPlanar,
+        'voronoi_volume': NetworkxVoronoiVolume,
         }
 
     if random_type in choose_constructor_option:
@@ -38,28 +38,26 @@ def init_graph_from_random(random_type, periods, sidelength):
 
     else :
         print('Warning, crystal type unknown, set default: simple')
-        random=choose_constructor_option['default'](periods, sidelength)
+        random = choose_constructor_option['default'](periods, sidelength)
 
     return random.G
 
-class networkx_random():
+@dataclass
+class NetworkxRandom():
 
     """
     A base class for spatial, random networks.
 
     Attributes
     ----------
+        num_periods(int): Number of points for internal Voronoi construction.
+        sidelength (float): Box length for spatial initialization.
         G (dictionary): An internal simple graph.
 
     """
-
-    def __init__(self):
-
-        """
-        A constructor for random spatial graphs, setting the internal graph variable.
-        """
-
-        self.G = nx.Graph()
+    num_periods: int = 0
+    sidelength: float = 0
+    G: nx.Graph = field(default_factory=nx.Graph, repr=False, init=False)
 
     def mirror_boxpoints(self, points, sl):
         """
@@ -130,7 +128,8 @@ class networkx_random():
 
         return answer
 
-class networkx_voronoi_planar(networkx_random, object):
+@dataclass
+class NetworkxVoronoiPlanar(NetworkxRandom):
 
     """
     A class algorithms to generate spatial, 2D random networks, generated via
@@ -138,14 +137,15 @@ class networkx_voronoi_planar(networkx_random, object):
 
     Attributes
     ----------
-        G (dictionary): An internal simple graph.
+        num_periods(int): Number of points for internal Voronoi construction.
+        sidelength (float): Box length for spatial initialization.
+        G (dict): An internal simple graph.
 
     """
 
-    def __init__(self, num_periods, sidelength):
+    def __post_init__(self):
 
-        super(networkx_voronoi_planar, self).__init__()
-        self.random_voronoi_periodic(num_periods, sidelength)
+        self.random_voronoi_periodic(self.num_periods, self.sidelength)
         # construct random 2d graph, confined in a certain spherical boundary,
          # connections set via voronoi tesselation
 
@@ -232,7 +232,8 @@ class networkx_voronoi_planar(networkx_random, object):
                     if len(i) == 2:
                         break
 
-class networkx_voronoi_volume(networkx_random, object):
+@dataclass
+class NetworkxVoronoiVolume(NetworkxRandom):
 
     """
     A class algorithms to generate spatial, 3D random networks, generated via
@@ -240,14 +241,15 @@ class networkx_voronoi_volume(networkx_random, object):
 
     Attributes
     ----------
-        G (dictionary): An internal simple graph.
+        num_periods(int): Number of points for internal Voronoi construction.
+        sidelength (float): Box length for spatial initialization.
+        G (dict): An internal simple graph.
 
     """
 
-    def __init__(self, num_periods,sidelength):
+    def __post_init__(self):
 
-        super(networkx_voronoi_volume,self).__init__()
-        self.random_voronoi_periodic(num_periods,sidelength)
+        self.random_voronoi_periodic(self.num_periods, self.sidelength)
     # construct random 3d graph, confined in a certain spherical boundary,
      # connections set via voronoi tesselation
 

@@ -11,29 +11,12 @@ import networkx as nx
 import numpy as np
 import sys
 import pandas as pd
+from dataclasses import dataclass, field
 # custom embeddings/architectures
 from kirchhoff.circuit_init import *
 import kirchhoff.init_crystal as init_crystal
 import kirchhoff.init_random as init_random
 
-
-def initialize_flow_circuit_from_networkx(input_graph):
-
-    """
-    Initialize a flow circuit from a given networkx graph.
-
-    Args:
-        input_graph (nx.Graph): A networkx graph.
-
-    Returns:
-        flow_circuit: A flow_circuit object.
-
-    """
-
-    kirchhoff_graph = flow_circuit()
-    kirchhoff_graph.default_init(input_graph)
-
-    return kirchhoff_graph
 
 def initialize_flow_circuit_from_crystal(crystal_type='default', periods=1):
 
@@ -49,9 +32,9 @@ def initialize_flow_circuit_from_crystal(crystal_type='default', periods=1):
 
     """
 
-    kirchhoff_graph = flow_circuit()
     input_graph = init_crystal.init_graph_from_crystal(crystal_type, periods)
-    kirchhoff_graph.default_init(input_graph)
+    kirchhoff_graph = FlowCircuit(input_graph)
+    kirchhoff_graph.info = set_info(input_graph, crystal_type)
 
     return kirchhoff_graph
 
@@ -70,9 +53,9 @@ def initialize_flow_circuit_from_random(random_type='default', periods=10, sidel
 
     """
 
-    kirchhoff_graph = flow_circuit()
     input_graph = init_random.init_graph_from_random(random_type, periods, sidelength)
-    kirchhoff_graph.default_init(input_graph)
+    kirchhoff_graph = FlowCircuit(input_graph)
+    kirchhoff_graph.info = set_info(input_graph, random_type)
 
     return kirchhoff_graph
 
@@ -115,8 +98,9 @@ def setup_flow_circuit(skeleton=None, sourceMode=None, plexusMode=None, **kwargs
     kirchhoff_graph.set_plexus_landscape(plexusMode, **kwargs)
 
     return kirchhoff_graph
-# class flow_circuit(kirchhoff_init.circuit, object):
-class flow_circuit(circuit, object):
+
+@dataclass
+class FlowCircuit(Circuit):
 
     """
     A derived class for flow circuits.
@@ -129,13 +113,12 @@ class flow_circuit(circuit, object):
 
     """
 
-    def __init__(self):
+    source_mode: dict = field(default_factory=dict, repr=False)
+    plexus_mode: dict = field(default_factory=dict, repr=False)
 
-        """
-        A derived constructor for flow circuits, setting source_mode and plexus_mode.
-        """
+    def __post_init__(self):
 
-        super(flow_circuit, self).__init__()
+        self.init_circuit()
 
         self.source_mode = {
             'default': self.init_source_default,
