@@ -254,7 +254,7 @@ class dual_circuit():
 
             self.layer.append(initialize_circuit_from_networkx(G))
 
-    def flow_circuit_init_from_networkx(self,  input_graphs ):
+    def flow_circuit_init_from_networkx(self, input_graphs ):
 
         """
         Initialize flow circuit layers with input graphs.
@@ -272,7 +272,7 @@ class dual_circuit():
 
             self.layer.append(initialize_flow_circuit_from_networkx(G))
 
-    def flux_circuit_init_from_networkx(self,  input_graphs ):
+    def flux_circuit_init_from_networkx(self, input_graphs ):
         """
         Initialize flux circuit layers with input graphs.
 
