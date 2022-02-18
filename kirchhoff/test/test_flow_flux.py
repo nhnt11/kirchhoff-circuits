@@ -43,7 +43,6 @@ def test_circuit_plotDual():
     fig=D.layer[0].plot_circuit()
     fig=D.layer[1].plot_circuit()
 
-
 def test_circuit_plotRandom():
 
     K=kfc.initialize_flow_circuit_from_random(random_type='voronoi_volume', periods=10, sidelength=10)

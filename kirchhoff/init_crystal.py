@@ -674,7 +674,7 @@ class NetworkxSquare(NetworkxCrystal):
                 dnm = [self.G.nodes[nm[0]]['pos'], self.G.nodes[nm[1]]['pos']]
                 self.G.add_edge(*nm, slope=dnm)
 
-class NetworkxTriagonalPlanar(NetworkxCrystal):
+class NetworkxTrigonalPlanar(NetworkxCrystal):
 
     """
     A derived class for spatial, planar triangulated graphs.

@@ -18,12 +18,6 @@ import kirchhoff.init_random as init_random
 # custom output functions
 import kirchhoff.draw_networkx as dx
 
-def set_info(input_graph, grid_type):
-
-    e = nx.number_of_edges(input_graph)
-    n = nx.number_of_nodes(input_graph)
-
-    return f'type: {grid_type}, #edges: {e}, #nodes: {n}'
 
 def initialize_circuit_from_crystal(crystal_type='default', periods=1):
 
@@ -39,7 +33,7 @@ def initialize_circuit_from_crystal(crystal_type='default', periods=1):
     """
     input_graph = init_crystal.init_graph_from_crystal(crystal_type, periods)
     kirchhoff_graph = Circuit(input_graph)
-    kirchhoff_graph.info = set_info(input_graph, crystal_type)
+    kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, crystal_type)
 
     return kirchhoff_graph
 
@@ -58,7 +52,7 @@ def initialize_circuit_from_random(random_type='default', periods=10, sidelength
 
     input_graph = init_random.init_graph_from_random(random_type, periods, sidelength)
     kirchhoff_graph = Circuit(input_graph)
-    kirchhoff_graph.info = set_info(input_graph, random_type)
+    kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, random_type)
 
     return kirchhoff_graph
 
@@ -99,11 +93,18 @@ class Circuit:
     #     self.H_C = []
     #     self.H_J = []
 
+    def set_info(self, input_graph, grid_type):
+
+        e = nx.number_of_edges(input_graph)
+        n = nx.number_of_nodes(input_graph)
+
+        return f'type: {grid_type}, #edges: {e}, #nodes: {n}'
+
     def init_circuit(self):
 
         e = nx.number_of_edges(self.G)
         n = nx.number_of_nodes(self.G)
-        self.info = set_info(self.G, 'custom')
+        self.info = self.set_info(self.G, 'custom')
 
         self.scales={
                 'conductance': 1,

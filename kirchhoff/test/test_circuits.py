@@ -79,19 +79,19 @@ def test_circuit_dual():
     for k, constr in circuitConstructor.items():
 
         circuitSet = [constr(G), constr(G)]
-        K = kid.DualCircuit(circuitSet)
+        K = kcd.DualCircuit(circuitSet)
         print(K.layer)
 
     print('test from catenation')
     for k, constr in circuitConstructor.items():
 
-        K = kid.initialize_dual_from_catenation(k, 'catenation', 3)
+        K = kcd.initialize_dual_from_catenation(k, 'catenation', 3)
         print(K.layer)
 
     print('test from minsurf')
     for k, constr in circuitConstructor.items():
 
-        K = kid.initialize_dual_from_minsurf(k, 'simple', 3)
+        K = kcd.initialize_dual_from_minsurf(k, 'simple', 3)
         print(K.layer)
 
 def test_grid_dual():

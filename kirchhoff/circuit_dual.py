@@ -44,7 +44,7 @@ def construct_from_graphSet(graphSet, circuit_type):
         for g in graphSet.layer:
             K = circuitConstructor['default'](g)
             circuitSet.append(K)
-            
+
     return circuitSet
 
 def initialize_dual_from_catenation(circuit_type='default', dual_type='catenation', num_periods=1):
@@ -62,10 +62,10 @@ def initialize_dual_from_catenation(circuit_type='default', dual_type='catenatio
 
     """
 
-    graphSet = init_dual.init_dual_catenation(dual_type, num_periods)
+    graphSet = init_dual.init_dualCatenation(dual_type, num_periods)
     circuitSet = construct_from_graphSet(graphSet, circuit_type)
     for i, g in enumerate(graphSet.layer):
-        circuitSet[i].info = set_info(g, dual_type)
+        circuitSet[i].info = circuitSet[i].set_info(g, dual_type)
 
     kirchhoff_dual = DualCircuit(circuitSet)
 
@@ -88,7 +88,7 @@ def initialize_dual_from_minsurf(circuit_type='default', dual_type='simple', num
     graphSet = init_dual.init_dual_minsurf_graphs(dual_type, num_periods)
     circuitSet = construct_from_graphSet(graphSet, circuit_type)
     for i, g in enumerate(graphSet.layer):
-        circuitSet[i].info = set_info(g, dual_type)
+        circuitSet[i].info = circuitSet[i].set_info(g, dual_type)
     kirchhoff_dual = DualCircuit(circuitSet)
     # kirchhoff_dual.flux_circuit_init_from_networkx([g for g in dual_graph.layer])
     # kirchhoff_dual.distance_edges()

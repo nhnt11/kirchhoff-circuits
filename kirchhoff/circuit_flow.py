@@ -34,7 +34,7 @@ def initialize_flow_circuit_from_crystal(crystal_type='default', periods=1):
 
     input_graph = init_crystal.init_graph_from_crystal(crystal_type, periods)
     kirchhoff_graph = FlowCircuit(input_graph)
-    kirchhoff_graph.info = set_info(input_graph, crystal_type)
+    kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, crystal_type)
 
     return kirchhoff_graph
 
@@ -55,7 +55,7 @@ def initialize_flow_circuit_from_random(random_type='default', periods=10, sidel
 
     input_graph = init_random.init_graph_from_random(random_type, periods, sidelength)
     kirchhoff_graph = FlowCircuit(input_graph)
-    kirchhoff_graph.info = set_info(input_graph, random_type)
+    kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, random_type)
 
     return kirchhoff_graph
 
@@ -72,7 +72,7 @@ def setup_default_flow_circuit(skeleton=None):
 
     """
 
-    kirchhoff_graph = initialize_flow_circuit_from_networkx(skeleton)
+    kirchhoff_graph = FlowCircuit(skeleton)
     kirchhoff_graph.set_source_landscape()
     kirchhoff_graph.set_plexus_landscape()
 
@@ -119,6 +119,9 @@ class FlowCircuit(Circuit):
     def __post_init__(self):
 
         self.init_circuit()
+        self.set_flowModes()
+
+    def set_flowModes(self):
 
         self.source_mode = {
             'default': self.init_source_default,
@@ -166,7 +169,7 @@ class FlowCircuit(Circuit):
         else :
             sys.exit('Whooops,  Error: Define Input/output-flows for the network.')
 
-        self.graph['graph_mode'] = mode
+        self.graph['source_mode'] = mode
         self.test_source_consistency()
 
     def set_potential_landscape(self, mode):

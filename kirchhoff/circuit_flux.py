@@ -33,7 +33,7 @@ def initialize_flux_circuit_from_random(random_type='default', periods=10, sidel
 
     input_graph = init_random.init_graph_from_random(random_type, periods, sidelength)
     kirchhoff_graph = FluxCircuit(input_graph)
-    kirchhoff_graph.info = set_info(input_graph, random_type)
+    kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, random_type)
 
     return kirchhoff_graph
 
@@ -53,7 +53,7 @@ def initialize_flux_circuit_from_crystal(crystal_type='default', periods=1):
 
     input_graph = init_crystal.init_graph_from_crystal(crystal_type, periods)
     kirchhoff_graph = FluxCircuit(input_graph)
-    kirchhoff_graph.info = set_info(input_graph, crystal_type)
+    kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, crystal_type)
 
     return kirchhoff_graph
 
@@ -105,6 +105,7 @@ class FluxCircuit(FlowCircuit):
     def __post_init__(self):
 
         self.init_circuit()
+        self.set_flowModes()
 
         e = self.G.number_of_edges()
         n = self.G.number_of_nodes()
@@ -123,8 +124,8 @@ class FluxCircuit(FlowCircuit):
 
         newGraphAttr = ['solute_mode','absorption_mode', 'geom_mode']
         for k in newGraphAttr:
-            self.scales.update({k: ''})
-    
+            self.graph.update({k: ''})
+
         self.solute_mode = {
             'default': self.init_solute_default,
             'custom': self.init_solute_custom
@@ -313,6 +314,10 @@ class FluxCircuit(FlowCircuit):
 
         num_e = self.G.number_of_edges()
         self.edges['length'] = np.ones(num_e)*self.scales['length']
+        conductivity = self.edges['conductivity']
+        k = self.scales['conductance']
+        self.edges['radius'] = np.power(conductivity/k, 0.25)
+        self.edges['radius_sq'] = np.sqrt(conductivity/k)
 
     def init_geom_random(self):
 
