@@ -24,16 +24,16 @@ def init_graph_from_crystal(crystal_type, periods):
     """
 
     choose_constructor_option = {
-        'default': networkx_simple,
-        'simple': networkx_simple,
-        'chain': networkx_chain,
-        'bcc': networkx_bcc,
-        'fcc': networkx_fcc,
-        'diamond': networkx_diamond,
-        'laves': networkx_laves,
-        'square': networkx_square,
-        'hexagonal': networkx_hexagonal,
-        'trigonal_planar': networkx_trigonal_planar,
+        'default': NetworkxSimple,
+        'simple': NetworkxSimple,
+        'chain': NetworkxChain,
+        'bcc': NetworkxBcc,
+        'fcc': NetworkxFcc,
+        'diamond': NetworkxDiamond,
+        'laves': NetworkxLaves,
+        'square': NetworkxSquare,
+        'hexagonal': NetworkxHexagonal,
+        'trigonal_planar': NetworkxTrigonalPlanar,
         }
 
     if crystal_type in choose_constructor_option:
@@ -74,7 +74,7 @@ def init_graph_from_asymCrystal(crystal_type, periodsZ, periodsXY):
 
     return crystal.G
 
-class networkx_crystal():
+class NetworkxCrystal():
 
     """
     A base class for spatial, crystal-like graphs.
@@ -178,7 +178,7 @@ class networkx_crystal():
                     if self.G.has_edge(u, v):
                         self.dict_cubes[k].add_edge(u, v)
 # 3D
-class networkx_simple(networkx_crystal, object):
+class NetworkxSimple(NetworkxCrystal):
 
     """
     A derived class for spatial, simple cubic graphs.
@@ -192,7 +192,7 @@ class networkx_simple(networkx_crystal, object):
          for the interal graph objects and geometry
         """
 
-        super(networkx_simple, self).__init__()
+        super(NetworkxSimple, self).__init__()
         self.lattice_constant = 1.
         self.translation_length = 1.
         self.simple_cubic_lattice(num_periods)
@@ -229,7 +229,7 @@ class networkx_simple(networkx_crystal, object):
         D = self.simple_unit_cell()
         self.periodic_cell_structure(D, num_periods)
 
-class networkx_chain(networkx_crystal, object):
+class NetworkxChain(NetworkxCrystal):
 
     """
     A derived class for spatial, 1D chain graphs.
@@ -243,7 +243,7 @@ class networkx_chain(networkx_crystal, object):
          for the interal graph objects and geometry
         """
 
-        super(networkx_chain, self).__init__()
+        super(NetworkxChain, self).__init__()
         self.simple_chain(num_periods)
 
     def simple_chain(self, num_periods):
@@ -263,7 +263,7 @@ class networkx_chain(networkx_crystal, object):
             df = (self.G.nodes[i+1]['pos'], self.G.nodes[i]['pos'])
             self.G.add_edge(i+1, i, slope=df)
 
-class networkx_bcc(networkx_crystal, object):
+class NetworkxBcc(NetworkxCrystal):
 
     """
     A derived class for spatial, simple bcc graphs.
@@ -276,7 +276,7 @@ class networkx_bcc(networkx_crystal, object):
         A constructor for simple bcc crystal objects, setting default values
          for the interal graph objects and geometry
         """
-        super(networkx_bcc, self).__init__()
+        super(NetworkxBcc, self).__init__()
         self.lattice_constant = np.sqrt(3.)/2.
         self.translation_length = 1.
         self.simple_bcc_lattice(num_periods)
@@ -314,7 +314,7 @@ class networkx_bcc(networkx_crystal, object):
         D = self.bcc_unit_cell()
         self.periodic_cell_structure(D, num_periods)
 
-class networkx_fcc(networkx_crystal, object):
+class NetworkxFcc(NetworkxCrystal):
 
     """
     A derived class for spatial, simple fcc graphs.
@@ -327,7 +327,7 @@ class networkx_fcc(networkx_crystal, object):
         A constructor for simple fcc crystal objects, setting default values
          for the interal graph objects and geometry
         """
-        super(networkx_fcc, self).__init__()
+        super(NetworkxFcc, self).__init__()
         self.lattice_constant = np.sqrt(2.)/2.
         self.translation_length = 1.
         self.simple_fcc_lattice(num_periods)
@@ -369,7 +369,7 @@ class networkx_fcc(networkx_crystal, object):
         D = self.fcc_unit_cell()
         self.periodic_cell_structure(D, num_periods)
 
-class networkx_diamond(networkx_crystal, object):
+class NetworkxDiamond(NetworkxCrystal):
 
     """
     A derived class for spatial, diamond graphs.
@@ -381,7 +381,7 @@ class networkx_diamond(networkx_crystal, object):
         A constructor for diamond crystal objects, setting default values
          for the interal graph objects and geometry
         """
-        super(networkx_diamond, self).__init__()
+        super(NetworkxDiamond, self).__init__()
         self.lattice_constant = np.sqrt(3.)/2.
         self.translation_length = 2.
         self.diamond_lattice(num_periods)
@@ -426,7 +426,7 @@ class networkx_diamond(networkx_crystal, object):
         D = self.diamond_unit_cell()
         self.periodic_cell_structure(D, num_periods)
 
-class networkx_laves(networkx_crystal, object):
+class NetworkxLaves(NetworkxCrystal):
 
     """
     A derived class for spatial, Laves graphs.
@@ -438,7 +438,7 @@ class networkx_laves(networkx_crystal, object):
         A constructor for laves crystal objects, setting default values
          for the interal graph objects and geometry
         """
-        super(networkx_laves, self).__init__()
+        super(NetworkxLaves, self).__init__()
         self.lattice_constant = 2.
         self.laves_lattice(num_periods)
 
@@ -495,7 +495,7 @@ class networkx_laves(networkx_crystal, object):
             uv = (H.nodes[e[0]]['pos'], H.nodes[e[1]]['pos'])
             self.G.add_edge(u,v, slope=uv)
 
-class networkx_trigonal_stack(networkx_crystal, object):
+class NetworkxTriagonalStack(NetworkxCrystal):
 
     """
     A derived class for spatial, stacked, triangulated graphs, contained in hexagonal shapes.
@@ -507,7 +507,7 @@ class networkx_trigonal_stack(networkx_crystal, object):
         A constructor for stacked, triangulated crystal objects, setting default values
          for the interal graph objects and geometry
         """
-        super(networkx_trigonal_stack, self).__init__()
+        super(NetworkxTriagonalStack, self).__init__()
         self.triangulated_hexagon_stack(stacks, tiling_factor)
 
     #define crosslinking procedure between the generated single-layers
@@ -628,7 +628,7 @@ class networkx_trigonal_stack(networkx_crystal, object):
         self.crosslink_stacks()
 
 # 2D
-class networkx_square(networkx_crystal, object):
+class NetworkxSquare(NetworkxCrystal):
 
     """
     A derived class for spatial, simpley tiled graphs.
@@ -641,7 +641,7 @@ class networkx_square(networkx_crystal, object):
         A constructor for simple tiled crystal objects, setting default values
          for the interal graph objects and geometry
         """
-        super(networkx_square, self).__init__()
+        super(NetworkxSquare, self).__init__()
         self.square_grid(tiling_factor)
 
     def square_grid(self, num_periods):
@@ -674,7 +674,7 @@ class networkx_square(networkx_crystal, object):
                 dnm = [self.G.nodes[nm[0]]['pos'], self.G.nodes[nm[1]]['pos']]
                 self.G.add_edge(*nm, slope=dnm)
 
-class networkx_trigonal_planar(networkx_crystal, object):
+class NetworkxTrigonalPlanar(NetworkxCrystal):
 
     """
     A derived class for spatial, planar triangulated graphs.
@@ -686,7 +686,7 @@ class networkx_trigonal_planar(networkx_crystal, object):
         A constructor for a planar triangulated crystal objects, setting default values
          for the interal graph objects and geometry
         """
-        super(networkx_trigonal_planar, self).__init__()
+        super(NetworkxTriagonalPlanar, self).__init__()
         self.triangulated_hexagon_lattice(tiling_factor)
     #I) construct and define one-layer hex
     # auxillary function,  construct triangulated hex grid upper and lower wings
@@ -758,7 +758,7 @@ class networkx_trigonal_planar(networkx_crystal, object):
         self.construct_wing(-1, n)
         self.construct_wing(1, n)
 
-class networkx_hexagonal(networkx_crystal, object):
+class NetworkxHexagonal(NetworkxCrystal):
 
         """
         A derived class for spatial, planar hexagonal graphs.
@@ -770,7 +770,7 @@ class networkx_hexagonal(networkx_crystal, object):
             A constructor for a planar, hexagonal crystal objects, setting default values
              for the interal graph objects and geometry
             """
-            super(networkx_hexagonal, self).__init__()
+            super(NetworkxHexagonal, self).__init__()
             self.hexagonal_grid(tiling_factor, periodic)
 
         def hexagonal_grid(self, tiling_factor, periodic_bool):

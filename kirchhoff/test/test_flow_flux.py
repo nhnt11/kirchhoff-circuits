@@ -12,85 +12,41 @@
 # @Last modified by:    Felix Kramer
 # @Last modified time: 2021-11-07T12:54:16+01:00
 # @License: MIT
+
 import networkx as nx
 import numpy as np
+import sys
 import kirchhoff.circuit_flow as kfc
-import kirchhoff.circuit_flux as kfx
 import kirchhoff.circuit_dual as kid
 
+def test_circuit_plot2D():
 
+    K = kfc.initialize_flow_circuit_from_crystal('hexagonal',3)
+    K.set_source_landscape()
+    K.set_plexus_landscape()
 
-def test_circuit_flow_flux():
+    fig=K.plot_circuit()
 
-    # fixed networkx graph
-    n = 3
-    G = nx.grid_graph((n, n, 1))
-    kfc.initialize_circuit_from_networkx(G)
-    kfx.initialize_circuit_from_networkx(G)
+def test_circuit_plot3D():
 
-    # custom crystal contructor
-    choose_constructor_option = [
-        'default',
-        'simple',
-        'chain',
-        'bcc',
-        'fcc',
-        'diamond',
-        'laves',
-        'square',
-        'hexagonal',
-        'trigonal_planar'
-        ]
+    K=kfc.initialize_flow_circuit_from_crystal('simple',3)
+    K.set_source_landscape()
+    K.set_plexus_landscape()
 
-    for crystal in choose_constructor_option:
-        kfc.initialize_flow_circuit_from_crystal(crystal, 3)
-        kfx.initialize_flux_circuit_from_crystal(crystal, 3)
+    fig=K.plot_circuit()
 
-    # custom random contructor
-    choose_constructor_option={
-        'default',
-        'voronoi_planar',
-        'voronoi_volume'
-        }
+def test_circuit_plotDual():
 
-    for rand in choose_constructor_option:
-        opts= {
-            'random_type': rand,
-            'periods': 10,
-            'sidelength': 1
-        }
-        kfc.initialize_flow_circuit_from_random(**opts)
-        kfx.initialize_flux_circuit_from_random(**opts)
+    D=kid.initialize_dual_from_minsurf(circuit_type='flow', dual_type='laves',num_periods=2)
+    fig=D.plot_circuit()
 
-def test_circuit_dual():
+    fig=D.layer[0].plot_circuit()
+    fig=D.layer[1].plot_circuit()
 
+def test_circuit_plotRandom():
 
-    # fixed networkx graph
-    n = 3
-    G = nx.grid_graph((n, n, 1))
+    K=kfc.initialize_flow_circuit_from_random(random_type='voronoi_volume', periods=10, sidelength=10)
+    K.set_source_landscape()
+    K.set_plexus_landscape()
 
-    D = kid.dual_circuit()
-    D.circuit_init_from_networkx([G, G])
-
-    kid.initialize_dual_flow_circuit_from_networkx(G, G, [])
-    kid.initialize_dual_flux_circuit_from_networkx(G, G, [])
-
-    # custom crystal contructor
-    choose_constructor_option = [
-        'simple',
-        'diamond',
-        'laves'
-        ]
-    for dual in choose_constructor_option:
-
-        kid.initialize_dual_flow_circuit_from_minsurf(dual, 3)
-        kid.initialize_dual_flux_circuit_from_minsurf(dual, 3)
-
-    choose_constructor_option = [
-        'catenation'
-        ]
-
-    for dual in choose_constructor_option:
-
-        kid.initialize_dual_flow_circuit_from_catenation(dual, 3)
-        kid.initialize_dual_flux_circuit_from_catenation(dual, 3)
+    fig=K.plot_circuit()

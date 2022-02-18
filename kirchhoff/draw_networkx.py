@@ -57,28 +57,7 @@ def plot_networkx(input_graph, **kwargs):
     add_traces_nodes(fig, options, input_graph, node_data)
     add_traces_edges(fig, options, input_graph, edge_data)
 
-    new_layout = {
-        'showlegend': False,
-        'autosize': True,
-        'margin': {'l': 0, 'r': 0, 't': 0, 'b': 0},
-        'scene': dict(aspectmode="data",)
-    }
-    if not options['axis']:
-        new_layout.update(
-            dict(
-                plot_bgcolor="#FFF",  # Sets background color to white
-                xaxis=dict(
-                    linecolor="#BCCCDC",  # Sets color of X-axis line
-                    showgrid=False  # Removes X-axis grid lines
-                ),
-                yaxis=dict(
-                    linecolor="#BCCCDC",  # Sets color of Y-axis line
-                    showgrid=False,  # Removes Y-axis grid lines
-                ),
-            )
-        )
-
-    fig.update_layout(**new_layout)
+    update_layout(fig, options)
 
     return fig
 
@@ -122,6 +101,38 @@ def plot_networkx_dual(dual_circuit, *args, **kwargs):
         add_traces_nodes(fig, options, K.G, node_data)
         add_traces_edges(fig, options, K.G, edges_data)
 
+    update_layout_dual(fig, options)
+
+
+    return fig
+
+def update_layout(fig, options):
+
+    new_layout = {
+        'showlegend': False,
+        'autosize': True,
+        'margin': {'l': 0, 'r': 0, 't': 0, 'b': 0},
+        'scene': dict(aspectmode="data",)
+    }
+    if not options['axis']:
+        new_layout.update(
+            dict(
+                plot_bgcolor="#FFF",  # Sets background color to white
+                xaxis=dict(
+                    linecolor="#BCCCDC",  # Sets color of X-axis line
+                    showgrid=False  # Removes X-axis grid lines
+                ),
+                yaxis=dict(
+                    linecolor="#BCCCDC",  # Sets color of Y-axis line
+                    showgrid=False,  # Removes Y-axis grid lines
+                ),
+            )
+        )
+
+    fig.update_layout(**new_layout)
+
+def update_layout_dual(fig, options):
+
     new_layout = {
         'showlegend': False,
         'autosize': True,
@@ -129,36 +140,28 @@ def plot_networkx_dual(dual_circuit, *args, **kwargs):
         'scene_camera': dict(eye=dict(x=2, y=2, z=0.9)),
         'scene': dict(aspectmode="data"),
     }
+
+    axisFormat = dict(
+                showbackground=True,
+                showticklabels=False,
+                autorange=True,
+        )
+
     if not options['axis']:
         new_layout.update(
             {'scene': dict(
                     xaxis_title='',
                     yaxis_title='',
                     zaxis_title='',
-                    xaxis = dict(
-                                showbackground=True,
-                                showticklabels=False,
-                                autorange=True,
-                        ),
-                    yaxis = dict(
-                                showbackground=True,
-                                showticklabels=False,
-                                autorange=True,
-                        ),
-                    zaxis = dict(
-                                showbackground=True,
-                                showticklabels=False,
-                                autorange=True,
-                        ),
+                    xaxis = axisFormat,
+                    yaxis = axisFormat,
+                    zaxis = axisFormat,
                     aspectmode="data",
                 )
             }
         )
 
     fig.update_layout(**new_layout)
-
-
-    return fig
 
 # integrate traces into the figure
 def add_traces_edges(fig, options, input_graph, extra_data):

@@ -11,81 +11,118 @@ import kirchhoff.circuit_init as ki
 import kirchhoff.init_dual as kid
 import kirchhoff.init_crystal as kic
 
-def test_circuit_nx():
+import kirchhoff.circuit_flow as kfc
+import kirchhoff.circuit_flux as kfx
+import kirchhoff.circuit_dual as kcd
 
-    n = 3
-    G = nx.grid_graph((n, n, 1))
-    K = ki.initialize_circuit_from_networkx(G)
+def test_circuit_constructors():
 
-def test_circuit_crystal():
+    n=3
+    G=nx.grid_graph(( n,n,1))
 
-    pr = 3
-    choose_constructor_option = [
-        'default',
-        'simple',
-        'chain',
-        'bcc',
-        'fcc',
-        'diamond',
-        'laves',
-        'square',
-        'hexagonal',
-        'trigonal_planar'
-        ]
+    # circuits
+    K = ki.Circuit(G)
+    # print(K)
+    K = ki.initialize_circuit_from_crystal('simple',3)
+    # print(K)
+    K = ki.initialize_circuit_from_random(random_type='voronoi_volume')
+    # print(K)
 
-    for crystal in choose_constructor_option:
-            K = kic.init_graph_from_crystal(crystal_type=crystal, periods=pr)
+    # flowcircuits
+    K = kfc.FlowCircuit(G)
+    # print(K)
+    K = kfc.initialize_flow_circuit_from_crystal('simple',3)
+    # print(K)
+    K = kfc.initialize_flow_circuit_from_random(random_type='voronoi_volume')
+    # print(K)
 
-    choose_constructor_option = [
-        'trigonal_stack'
-        ]
+    # fluxcircuits
+    K = kfx.FluxCircuit(G)
+    # print(K)
+    K = kfx.initialize_flux_circuit_from_crystal('simple',3)
+    # print(K)
+    K = kfx.initialize_flux_circuit_from_random(random_type='voronoi_volume')
+    # print(K)
 
-    for crystal in choose_constructor_option:
-            K = kic.init_graph_from_asymCrystal(crystal_type=crystal, periodsZ=pr, periodsXY=pr)
+def test_grid():
 
-def test_circuit_random():
+    import kirchhoff.init_random as kir
 
-    choose_constructor_option={
-        'default',
-        'voronoi_planar',
-        'voronoi_volume'
-        }
+    constructors = {
+            'default': kir.NetworkxVoronoiPlanar,
+            'voronoi_planar': kir.NetworkxVoronoiPlanar,
+            'voronoi_volume': kir.NetworkxVoronoiVolume,
+            }
 
-    for rand in choose_constructor_option:
-        K = ki.initialize_circuit_from_random(random_type=rand, periods=10, sidelength=1)
+    for k,constr in constructors.items():
+
+        grid = kir.init_graph_from_random(k, periods=10, sidelength=10)
+        print(nx.info(grid))
 
 def test_circuit_dual():
 
-    pr = 3
-    choose_constructor_option = [
-        'simple',
-        'diamond',
-        'laves'
-        ]
-    for dual in choose_constructor_option:
-        D = kid.init_dual_minsurf_graphs(dual_type=dual, num_periods=pr)
+    from kirchhoff.circuit_init import Circuit
+    from kirchhoff.circuit_flow import FlowCircuit
+    from kirchhoff.circuit_flux import FluxCircuit
 
-    choose_constructor_option = [
-        'catenation'
-        ]
-    for dual in choose_constructor_option:
-        D = kid.init_dual_catenation(dual_type=dual, num_periods=pr)
+    circuitConstructor = {
+        'default' : Circuit,
+        'circuit' : Circuit,
+        'flow' : FlowCircuit,
+        'flux' : FluxCircuit,
+        }
 
-# def test_circuit_flow():
-#
-#     import kirchhoff.circuit_flow as kfc
-#     kfc.initialize_circuit_from_networkx(G)
-#     kfc.initialize_flow_circuit_from_crystal('simple', 3)
-#     kfc.initialize_flow_circuit_from_random(random_type='voronoi_volume')
-#
-# def test_circuit_flux():
-#
-#     import kirchhoff.circuit_flux as kfx
-#     kfx.initialize_circuit_from_networkx(G)
-#     kfx.initialize_flux_circuit_from_crystal('simple', 3)
-#     kfx.initialize_flux_circuit_from_random(random_type='voronoi_volume')
-#
-# def test_circuit_dual():
-#
-#     import kirchhoff.circuit_dual as kid
-#     kid.initialize_dual_flux_circuit_from_minsurf('simple', 3)
+    print('test from networkx')
+    n=3
+    G=nx.grid_graph(( n,n,1))
+
+    for k, constr in circuitConstructor.items():
+
+        circuitSet = [constr(G), constr(G)]
+        K = kcd.DualCircuit(circuitSet)
+        print(K.layer)
+
+    print('test from catenation')
+    for k, constr in circuitConstructor.items():
+
+        K = kcd.initialize_dual_from_catenation(k, 'catenation', 3)
+        print(K.layer)
+
+    print('test from minsurf')
+    for k, constr in circuitConstructor.items():
+
+        K = kcd.initialize_dual_from_minsurf(k, 'simple', 3)
+        print(K.layer)
+
+def test_grid_dual():
+
+    constructors = {
+            'default': kid.NetworkxDualSimple,
+            'simple': kid.NetworkxDualSimple,
+            'diamond': kid.NetworkxDualDiamond,
+            'laves': kid.NetworkxDualLaves,
+        }
+
+    for k,constr in constructors.items():
+
+        grid = kid.init_dual_minsurf_graphs(k, 3)
+        print(nx.info(grid.layer[0]))
+        print(nx.info(grid.layer[1]))
+
+    constructors = {
+            'default': kid.NetworkxDualCatenation,
+            'catenation': kid.NetworkxDualCatenation,
+            'crossMesh': kid.NetworkxDualCrossMesh,
+        }
+
+
+    for k,constr in constructors.items():
+
+        if k == 'crossMesh':
+            n = [3, 3, 3, 3]
+        else:
+            n = 3
+
+        grid = kid.init_dualCatenation(k, n)
+        print(nx.info(grid.layer[0]))
+        print(nx.info(grid.layer[1]))

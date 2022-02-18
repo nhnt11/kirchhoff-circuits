@@ -11,28 +11,10 @@ import networkx as nx
 import numpy as np
 import sys
 import pandas as pd
-
+from dataclasses import dataclass, field
 from kirchhoff.circuit_flow import *
 import kirchhoff.init_crystal as init_crystal
 import kirchhoff.init_random as init_random
-
-def initialize_flux_circuit_from_networkx(input_graph):
-
-    """
-    Initialize a flux circuit from a given networkx graph.
-
-    Args:
-        input_graph (nx.Graph): A networkx graph.
-
-    Returns:
-        flux_circuit: A flux_circuit object.
-
-    """
-
-    kirchhoff_graph = flux_circuit()
-    kirchhoff_graph.default_init(input_graph)
-
-    return kirchhoff_graph
 
 def initialize_flux_circuit_from_random(random_type='default', periods=10, sidelength=1):
 
@@ -49,9 +31,9 @@ def initialize_flux_circuit_from_random(random_type='default', periods=10, sidel
 
     """
 
-    kirchhoff_graph = flux_circuit()
     input_graph = init_random.init_graph_from_random(random_type, periods, sidelength)
-    kirchhoff_graph.default_init(input_graph)
+    kirchhoff_graph = FluxCircuit(input_graph)
+    kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, random_type)
 
     return kirchhoff_graph
 
@@ -69,10 +51,9 @@ def initialize_flux_circuit_from_crystal(crystal_type='default', periods=1):
 
     """
 
-
-    kirchhoff_graph = flux_circuit()
     input_graph = init_crystal.init_graph_from_crystal(crystal_type, periods)
-    kirchhoff_graph.default_init(input_graph)
+    kirchhoff_graph = FluxCircuit(input_graph)
+    kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, crystal_type)
 
     return kirchhoff_graph
 
@@ -106,7 +87,8 @@ def setup_default_flux_circuit(skeleton=None, diffusion=None, absorption=None):
 
     return kirchhoff_graph
 
-class flux_circuit(flow_circuit, object):
+@dataclass
+class FluxCircuit(FlowCircuit):
 
     """
     A derived class for flux circuits.
@@ -120,32 +102,29 @@ class flux_circuit(flow_circuit, object):
 
     """
 
-    def __init__(self):
+    def __post_init__(self):
 
-        """
-        A derived constructor for flux circuits, setting solute_mode, absorption_mode, geom_mode
-        """
+        self.init_circuit()
+        self.set_flowModes()
 
-        super(flux_circuit, self).__init__()
+        e = self.G.number_of_edges()
+        n = self.G.number_of_nodes()
 
-        self.nodes['solute'] = []
-        self.nodes['concentration'] = []
+        newNodeAttr = ['solute','concentration']
+        for k in newNodeAttr:
+            self.nodes[k] = np.zeros(n)
 
-        self.edges['peclet'] = []
-        self.edges['absorption'] = []
-        self.edges['length'] = []
-        self.edges['radius'] = []
-        self.edges['radius_sq'] = []
-        self.edges['uptake'] = []
+        newEdgeAttr = ['peclet','absorption','length','radius','radius_sq','uptake']
+        for k in newEdgeAttr:
+            self.edges[k] = np.zeros(e)
 
-        self.scales.update({'flux': 1})
-        self.scales.update({'sum_flux': 1})
-        self.scales.update({'diffusion': 1})
-        self.scales.update({'absorption': 1})
+        newScaleAttr = ['flux', 'sum_flux', 'diffusion', 'absorption']
+        for k in newScaleAttr:
+            self.scales.update({k: 1})
 
-        self.graph.update({'solute_mode': ''})
-        self.graph.update({'absorption_mode': ''})
-        self.graph.update({'geom_mode': ''})
+        newGraphAttr = ['solute_mode','absorption_mode', 'geom_mode']
+        for k in newGraphAttr:
+            self.graph.update({k: ''})
 
         self.solute_mode = {
             'default': self.init_solute_default,
@@ -335,6 +314,10 @@ class flux_circuit(flow_circuit, object):
 
         num_e = self.G.number_of_edges()
         self.edges['length'] = np.ones(num_e)*self.scales['length']
+        conductivity = self.edges['conductivity']
+        k = self.scales['conductance']
+        self.edges['radius'] = np.power(conductivity/k, 0.25)
+        self.edges['radius_sq'] = np.sqrt(conductivity/k)
 
     def init_geom_random(self):
 
