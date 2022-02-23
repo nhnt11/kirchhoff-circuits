@@ -99,6 +99,7 @@ def setup_flow_circuit(skeleton=None, sourceMode=None, plexusMode=None, **kwargs
 
     return kirchhoff_graph
 
+
 @dataclass
 class FlowCircuit(Circuit):
 
@@ -190,7 +191,8 @@ class FlowCircuit(Circuit):
 
                 s = self.custom[node]*self.scales['flow']
                 self.G.nodes[node]['source'] = s
-                self.nodes['source'][j] = s
+                # self.nodes['source'][j] = s
+                self.nodes.at[j, 'source'] = s
 
         else:
             print('Warning, custom source values ill defined, setting default!')
@@ -371,7 +373,10 @@ class FlowCircuit(Circuit):
         """
 
         self.G.nodes[node]['source'] = self.nodes_source[idx]*self.scales['flow']
-        self.nodes['source'][j] = self.nodes_source[idx]*self.scales['flow']
+        # self.nodes['source'][j] = self.nodes_source[idx]*self.scales['flow']
+
+        val = self.nodes_source[idx]*self.scales['flow']
+        self.nodes.at[j, 'source'] = val
 
     # different init potetnial functions
     def set_terminals_potentials(self, p0):
