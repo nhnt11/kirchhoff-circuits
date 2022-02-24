@@ -190,7 +190,7 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
 
             for idx_e, e in enumerate(K[i].edges()):
                 opt = {
-                'slope': [K[i].nodes[e[0]]['pos'], K[i].nodes[e[1]]['pos']],
+                # 'slope': [K[i].nodes[e[0]]['pos'], K[i].nodes[e[1]]['pos']],
                 'label': K[i].edges[e]['label']
                 }
                 v, u = dict_P[i][0][e[0]], dict_P[i][0][e[1]]
@@ -229,30 +229,30 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
 
         return P
 
-    def set_graph_adjacency(self, G, H):
-
-        """
-        Relabel affiliations and graph attributes.
-
-        Args:
-            G (nx.Graph): The inner networkx graph.
-            H (nx.Graph): The outer networkx graph.
-
-        Returns:
-            list:  A list of affiliated edge pairs of the two graphs.
-
-        """
-        adj = []
-
-        for i, e in enumerate(G.edges()):
-            a = np.add(G.edges[e]['slope'][0], G.edges[e]['slope'][1])
-            for j, f in enumerate(H.edges()):
-                b = np.add(H.edges[f]['slope'][0], H.edges[f]['slope'][1])
-                c = np.subtract(a, b)
-                if np.dot(c, c) == 14.:
-                    adj.append([G.edges[e]['label'], H.edges[f]['label']])
-
-        return adj
+    # def set_graph_adjacency(self, G, H):
+    #
+    #     """
+    #     Relabel affiliations and graph attributes.
+    #
+    #     Args:
+    #         G (nx.Graph): The inner networkx graph.
+    #         H (nx.Graph): The outer networkx graph.
+    #
+    #     Returns:
+    #         list:  A list of affiliated edge pairs of the two graphs.
+    #
+    #     """
+    #     adj = []
+    #
+    #     for i, e in enumerate(G.edges()):
+    #         a = np.add(G.edges[e]['slope'][0], G.edges[e]['slope'][1])
+    #         for j, f in enumerate(H.edges()):
+    #             b = np.add(H.edges[f]['slope'][0], H.edges[f]['slope'][1])
+    #             c = np.subtract(a, b)
+    #             if np.dot(c, c) == 14.:
+    #                 adj.append([G.edges[e]['label'], H.edges[f]['label']])
+    #
+    #     return adj
 
 class NetworkxDualSimple(NetworkxDual):
     """
@@ -344,7 +344,7 @@ class NetworkxDualSimple(NetworkxDual):
             for j, m in enumerate(list_p[(i+1):]):
                 dist = np.linalg.norm(n-m)
                 if dist == self.lattice_constant:
-                    G.add_edge(i, (i+1)+j, slope=(n, m), label=counter_e)
+                    G.add_edge(i, (i+1)+j, label=counter_e)
                     counter_e += 1
 
         return G, H
@@ -386,7 +386,7 @@ class NetworkxDualSimple(NetworkxDual):
 
                 if not H.has_edge(*E2):
                     options = {
-                    'slope': (V.vertices[e1], V.vertices[e2]),
+                    # 'slope': (V.vertices[e1], V.vertices[e2]),
                     'label': counter_e
                     }
                     H.add_edge(*E2, **options)
@@ -504,7 +504,7 @@ class NetworkxDualDiamond(NetworkxDual):
 
                 dist = np.linalg.norm(np.subtract(n, m))
                 if dist == self.lattice_constant:
-                    G.add_edge(i, (i+1)+j, slope=(n, m), label=counter_e)
+                    G.add_edge(i, (i+1)+j, label=counter_e)
                     counter_e += 1
 
         return G
@@ -654,7 +654,7 @@ class NetworkxDualLaves(NetworkxDual):
 
                 if dist == self.lattice_constant:
                     options = {
-                    'slope': (G_aux.nodes[n]['pos'], G_aux.nodes[m]['pos']),
+                    # 'slope': (G_aux.nodes[n]['pos'], G_aux.nodes[m]['pos']),
                     'label': counter_e
                     }
                     G.add_edge(n, m, **options)
