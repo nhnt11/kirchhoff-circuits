@@ -155,7 +155,7 @@ class NetworkxCrystal():
                 dist = np.linalg.norm(p-q)
                 if dist == self.lattice_constant:
                     mn = (DL.nodes[tuple(n)]['pos'], DL.nodes[tuple(m)]['pos'])
-                    DL.add_edge(tuple(n), tuple(m), slope=mn)
+                    DL.add_edge(tuple(n), tuple(m))
 
         dict_nodes = {}
         for idx_n, n in enumerate(DL.nodes()):
@@ -164,7 +164,7 @@ class NetworkxCrystal():
         for idx_e, e in enumerate(DL.edges()):
             u, v = dict_nodes[e[0]], dict_nodes[e[1]]
             uv = (DL.nodes[e[0]]['pos'], DL.nodes[e[1]]['pos'])
-            self.G.add_edge(u, v, slope=uv )
+            self.G.add_edge(u, v )
 
         self.dict_cubes = {}
         dict_aux = {}
@@ -261,7 +261,7 @@ class NetworkxChain(NetworkxCrystal):
             self.G.add_node(i, pos=np.array([i, 0, 0]))
         for i in range(num_periods-1):
             df = (self.G.nodes[i+1]['pos'], self.G.nodes[i]['pos'])
-            self.G.add_edge(i+1, i, slope=df)
+            self.G.add_edge(i+1, i)
 
 class NetworkxBcc(NetworkxCrystal):
 
@@ -483,7 +483,7 @@ class NetworkxLaves(NetworkxCrystal):
                 dist = np.dot(v, v)
                 if dist == self.lattice_constant:
                     mn = (G_aux.nodes[n]['pos'], G_aux.nodes[m]['pos'])
-                    H.add_edge(n, m, slope=mn)
+                    H.add_edge(n, m)
 
         dict_nodes = {}
         for idx_n, n in enumerate(H.nodes()):
@@ -493,7 +493,7 @@ class NetworkxLaves(NetworkxCrystal):
         for idx_e, e in enumerate(H.edges()):
             u,v = dict_nodes[e[0]], dict_nodes[e[1]]
             uv = (H.nodes[e[0]]['pos'], H.nodes[e[1]]['pos'])
-            self.G.add_edge(u,v, slope=uv)
+            self.G.add_edge(u,v)
 
 class NetworkxTriagonalStack(NetworkxCrystal):
 
@@ -533,7 +533,7 @@ class NetworkxTriagonalStack(NetworkxCrystal):
                     p1 = self.G.nodes[u]['pos']
                     p2 = self.G.nodes[v]['pos']
 
-                    self.G.add_edge(u, v, slope=(p1, p2))
+                    self.G.add_edge(u, v)
 
     # auxillary function,  construct triangulated hex grid upper and lower wings
     def construct_spine_stack(self, z, n):
@@ -557,7 +557,7 @@ class NetworkxTriagonalStack(NetworkxCrystal):
             v = (m+1, 0, z)
             uv = (self.G.nodes[u]['pos'], self.G.nodes[v]['pos'])
 
-            self.G.add_edge(u, v, slope=uv)
+            self.G.add_edge(u, v)
 
     def construct_wing_stack(self, z, a, n):
 
@@ -582,8 +582,8 @@ class NetworkxTriagonalStack(NetworkxCrystal):
             self.G.add_node(u, pos = ((m+1)/2., a*(np.sqrt(3.)/2.)*(m+1), z))
             uv = (self.G.nodes[u]['pos'], self.G.nodes[v]['pos'])
             vw = (self.G.nodes[u]['pos'], self.G.nodes[w]['pos'])
-            self.G.add_edge(u, v, slope=uv)
-            self.G.add_edge(u, w, slope=vw)
+            self.G.add_edge(u, v)
+            self.G.add_edge(u, w)
 
             for p in range(floor_m_nodes):
                 #add 3-junctions
@@ -599,9 +599,9 @@ class NetworkxTriagonalStack(NetworkxCrystal):
                 vw = (self.G.nodes[v]['pos'], self.G.nodes[w]['pos'])
                 ux = (self.G.nodes[u]['pos'], self.G.nodes[x]['pos'])
 
-                self.G.add_edge(u, v, slope=uv)
-                self.G.add_edge(u, w, slope=vw)
-                self.G.add_edge(u, x, slope=ux)
+                self.G.add_edge(u, v)
+                self.G.add_edge(u, w)
+                self.G.add_edge(u, x)
 
     #construct full triangulated hex grids as skeleton of a stacked structure
     def triangulated_hexagon_stack(self, stacks, num_periods):
@@ -672,7 +672,7 @@ class NetworkxSquare(NetworkxCrystal):
         for nm in dict_d:
             if dict_d[nm] <=  threshold:
                 dnm = [self.G.nodes[nm[0]]['pos'], self.G.nodes[nm[1]]['pos']]
-                self.G.add_edge(*nm, slope=dnm)
+                self.G.add_edge(*nm)
 
 class NetworkxTrigonalPlanar(NetworkxCrystal):
 
@@ -712,8 +712,8 @@ class NetworkxTrigonalPlanar(NetworkxCrystal):
             self.G.add_node(u, pos=ps)
             uv = (self.G.nodes[u]['pos'], self.G.nodes[v]['pos'])
             uw = (self.G.nodes[u]['pos'], self.G.nodes[w]['pos'])
-            self.G.add_edge(u, v, slope=uv)
-            self.G.add_edge(u, w, slope=uw)
+            self.G.add_edge(u, v)
+            self.G.add_edge(u, w)
 
             for p in range(floor_m_nodes):
                 #add 3-junctions
@@ -728,9 +728,9 @@ class NetworkxTrigonalPlanar(NetworkxCrystal):
                 uv = (self.G.nodes[u]['pos'], self.G.nodes[v]['pos'])
                 uw = (self.G.nodes[u]['pos'], self.G.nodes[w]['pos'])
                 ux = (self.G.nodes[u]['pos'], self.G.nodes[x]['pos'])
-                self.G.add_edge(u, v, slope=uv)
-                self.G.add_edge(u, w, slope=uw)
-                self.G.add_edge(u, x, slope=ux)
+                self.G.add_edge(u, v)
+                self.G.add_edge(u, w)
+                self.G.add_edge(u, x)
 
     #construct full triangulated hex grid as skeleton
     def triangulated_hexagon_lattice(self, n):
@@ -752,7 +752,7 @@ class NetworkxTrigonalPlanar(NetworkxCrystal):
             self.G.add_node((m+1, 0), pos=np.array([(m+1), 0.]))
             u, v = (m, 0), (m+1, 0)
             uv = (self.G.nodes[u]['pos'], self.G.nodes[v]['pos'])
-            self.G.add_edge( u, v, slope=uv)
+            self.G.add_edge( u, v)
 
         #construct lower/upper halfspace
         self.construct_wing(-1, n)
@@ -792,6 +792,4 @@ class NetworkxHexagonal(NetworkxCrystal):
             # set embedding data
             for n in self.G.nodes():
                 self.G.nodes[n]['pos'] = np.array(self.G.nodes[n]['pos'])
-            for e in self.G.edges():
-                slope =  [self.G.nodes[e[0]]['pos'], self.G.nodes[e[1]]['pos']]
-                self.G.edges[e]['slope'] = slope
+            

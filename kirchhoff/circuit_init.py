@@ -178,7 +178,6 @@ class Circuit:
             else:
                 self.edges[k] = np.zeros(E)
 
-
     #get incidence atrix and its transpose
     def get_incidence_matrices(self):
 
@@ -230,6 +229,7 @@ class Circuit:
         #cut out edges which lie beneath a certain threshold value and export
          # this clipped structure
         self.set_network_attributes()
+        self.threshold = 0.01
 
         for e in self.list_graph_edges:
             if self.G.edges[e]['conductivity'] > self.threshold:
@@ -237,8 +237,8 @@ class Circuit:
                 for k in self.G.edges[e].keys():
                     self.H.edges[e][k] = self.G.edges[e][k]
 
-        self.list_pruned_nodes = list(self.H.nodes())
-        self.list_pruned_edges = list(self.H.edges())
+        list_pruned_nodes = list(self.H.nodes())
+        list_pruned_edges = list(self.H.edges())
 
         for n in list_pruned_nodes:
             for k in self.G.nodes[n].keys():

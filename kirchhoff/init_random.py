@@ -224,7 +224,7 @@ class NetworkxVoronoiPlanar(NetworkxRandom):
                     h = len(i)-1
 
                     options ={
-                        'slope': (V.vertices[i[h-(l+1)]], V.vertices[i[h-l]]),
+                        # 'slope': (V.vertices[i[h-(l+1)]], V.vertices[i[h-l]]),
                         'label': k,
                     }
                     self.G.add_edge(i[h-(l+1)], i[h-l], **options)
@@ -329,7 +329,7 @@ class NetworkxVoronoiVolume(NetworkxRandom):
                 for l in range(len(i)):
                     h = len(i)-1
                     options = {
-                        'slope': (V.vertices[i[h-(l+1)]], V.vertices[i[h-l]]),
+                        # 'slope': (V.vertices[i[h-(l+1)]], V.vertices[i[h-l]]),
                         'label': k
 
                     }
