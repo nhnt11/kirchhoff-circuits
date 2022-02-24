@@ -191,7 +191,6 @@ class FlowCircuit(Circuit):
 
                 s = self.custom[node]*self.scales['flow']
                 self.G.nodes[node]['source'] = s
-                # self.nodes['source'][j] = s
                 self.nodes.at[j, 'source'] = s
 
         else:
@@ -371,11 +370,8 @@ class FlowCircuit(Circuit):
         """
         Set nodal flow attributes.
         """
-
-        self.G.nodes[node]['source'] = self.nodes_source[idx]*self.scales['flow']
-        # self.nodes['source'][j] = self.nodes_source[idx]*self.scales['flow']
-
         val = self.nodes_source[idx]*self.scales['flow']
+        self.G.nodes[node]['source'] = val
         self.nodes.at[j, 'source'] = val
 
     # different init potetnial functions

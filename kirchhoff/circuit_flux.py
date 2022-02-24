@@ -199,7 +199,7 @@ class FluxCircuit(FlowCircuit):
             for j, node in enumerate(self.list_graph_nodes):
 
                 f = self.custom[node]*self.scales['flux']
-                self.nodes['solute'][j] = f
+                self.nodes.at[j,'solute'] = f
                 self.G.nodes[node]['solute'] = f
 
         else:
@@ -219,7 +219,7 @@ class FluxCircuit(FlowCircuit):
         """
 
         f = self.scales['flux']*vals
-        self.nodes['solute'][idx] = f
+        self.nodes.at[idx, 'solute'] = f
         self.G.nodes[nodes]['solute'] = f
 
     # set spatial pattern of solute absorption rate
