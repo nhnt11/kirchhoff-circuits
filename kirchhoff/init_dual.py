@@ -229,30 +229,30 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
 
         return P
 
-    # def set_graph_adjacency(self, G, H):
-    #
-    #     """
-    #     Relabel affiliations and graph attributes.
-    #
-    #     Args:
-    #         G (nx.Graph): The inner networkx graph.
-    #         H (nx.Graph): The outer networkx graph.
-    #
-    #     Returns:
-    #         list:  A list of affiliated edge pairs of the two graphs.
-    #
-    #     """
-    #     adj = []
-    #
-    #     for i, e in enumerate(G.edges()):
-    #         a = np.add(G.edges[e]['slope'][0], G.edges[e]['slope'][1])
-    #         for j, f in enumerate(H.edges()):
-    #             b = np.add(H.edges[f]['slope'][0], H.edges[f]['slope'][1])
-    #             c = np.subtract(a, b)
-    #             if np.dot(c, c) == 14.:
-    #                 adj.append([G.edges[e]['label'], H.edges[f]['label']])
-    #
-    #     return adj
+    def set_graph_adjacency(self, G, H):
+
+        """
+        Relabel affiliations and graph attributes.
+
+        Args:
+            G (nx.Graph): The inner networkx graph.
+            H (nx.Graph): The outer networkx graph.
+
+        Returns:
+            list:  A list of affiliated edge pairs of the two graphs.
+
+        """
+        adj = []
+
+        for i, e in enumerate(G.edges()):
+            a = np.add(G.nodes[e[0]]['pos'], G.nodes[e[1]]['pos'])
+            for j, f in enumerate(H.edges()):
+                b = np.add(H.nodes[f[0]]['pos'], H.nodes[f[1]]['pos'])
+                c = np.subtract(a, b)
+                if np.dot(c, c) == 14.:
+                    adj.append([G.edges[e]['label'], H.edges[f]['label']])
+
+        return adj
 
 class NetworkxDualSimple(NetworkxDual):
     """
