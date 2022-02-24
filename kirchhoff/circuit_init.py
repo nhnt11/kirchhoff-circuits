@@ -82,16 +82,17 @@ class Circuit:
     def __post_init__(self):
 
         self.init_circuit()
-    # def set_graph_containers(self):
-    #
-    #     """
-    #     Set internal graph containers.
-    #
-    #     """
-    #
-    #     self.H = nx.Graph()
-    #     self.H_C = []
-    #     self.H_J = []
+
+    def set_graph_containers(self):
+
+        """
+        Set internal graph containers.
+
+        """
+
+        self.H = nx.Graph()
+        self.H_C = []
+        self.H_J = []
 
     def set_info(self, input_graph, grid_type):
 
@@ -134,7 +135,7 @@ class Circuit:
             'label': [],
         }
         )
-        # self.set_graph_containers()
+        self.set_graph_containers()
         self.default_init()
 
     def default_init(self):
@@ -218,38 +219,38 @@ class Circuit:
             self.G.edges[e]['label'] = j
 
     # clipp small edges & translate conductance into general edge weight
-    # def clipp_graph(self):
-    #
-    #     """
-    #     Prune the internal graph and generate a new internal variable
-    #     represting the pruned based on an interanl threshold value.
-    #
-    #     """
-    #
-    #     #cut out edges which lie beneath a certain threshold value and export
-    #      # this clipped structure
-    #     self.set_network_attributes()
-    #
-    #     for e in self.list_graph_edges:
-    #         if self.G.edges[e]['conductivity'] > self.threshold:
-    #             self.H.add_edge(*e)
-    #             for k in self.G.edges[e].keys():
-    #                 self.H.edges[e][k] = self.G.edges[e][k]
-    #
-    #     self.list_pruned_nodes = list(self.H.nodes())
-    #     self.list_pruned_edges = list(self.H.edges())
-    #
-    #     for n in list_pruned_nodes:
-    #         for k in self.G.nodes[n].keys():
-    #             self.H.nodes[n][k] = self.G.nodes[n][k]
-    #         self.H_J.append(self.G.nodes[n]['source'])
-    #     for e in list_pruned_edges:
-    #         self.H_C.append(self.H.edges[e]['conductivity'])
-    #
-    #     self.H_C = np.asarray(self.H_C)
-    #     self.H_J = np.asarray(self.H_J)
-    #
-    #     assert( len(list(self.H.nodes())) == 0)
+    def clipp_graph(self):
+
+        """
+        Prune the internal graph and generate a new internal variable
+        represting the pruned based on an interanl threshold value.
+
+        """
+
+        #cut out edges which lie beneath a certain threshold value and export
+         # this clipped structure
+        self.set_network_attributes()
+
+        for e in self.list_graph_edges:
+            if self.G.edges[e]['conductivity'] > self.threshold:
+                self.H.add_edge(*e)
+                for k in self.G.edges[e].keys():
+                    self.H.edges[e][k] = self.G.edges[e][k]
+
+        self.list_pruned_nodes = list(self.H.nodes())
+        self.list_pruned_edges = list(self.H.edges())
+
+        for n in list_pruned_nodes:
+            for k in self.G.nodes[n].keys():
+                self.H.nodes[n][k] = self.G.nodes[n][k]
+            self.H_J.append(self.G.nodes[n]['source'])
+        for e in list_pruned_edges:
+            self.H_C.append(self.H.edges[e]['conductivity'])
+
+        self.H_C = np.asarray(self.H_C)
+        self.H_J = np.asarray(self.H_J)
+
+        assert( len(list(self.H.nodes())) == 0)
 
     def calc_root_incidence(self):
         """
