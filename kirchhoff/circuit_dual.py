@@ -36,6 +36,7 @@ def construct_from_graphSet(graphSet, circuit_type):
 
         for g in graphSet.layer:
             K = circuitConstructor[circuit_type](g)
+
             circuitSet.append(K)
 
     else:
@@ -47,7 +48,7 @@ def construct_from_graphSet(graphSet, circuit_type):
 
     return circuitSet
 
-def initialize_dual_from_catenation(circuit_type='default', dual_type='catenation', num_periods=1):
+def initialize_dual_from_catenation(dual_type='catenation', num_periods=1, circuit_type='default'):
 
     """
     Initialize a dual spatially embedded circuit, with internal graphs based on
@@ -71,7 +72,7 @@ def initialize_dual_from_catenation(circuit_type='default', dual_type='catenatio
 
     return kirchhoff_dual
 
-def initialize_dual_from_minsurf(circuit_type='default', dual_type='simple', num_periods=2):
+def initialize_dual_from_minsurf(dual_type='simple', num_periods=2, circuit_type='default'):
     """
     Initialize a dual spatially embedded flux circuit, with internal graphs based on
      the network skeletons of triply-periodic minimal surfaces.
@@ -90,8 +91,10 @@ def initialize_dual_from_minsurf(circuit_type='default', dual_type='simple', num
     for i, g in enumerate(graphSet.layer):
         circuitSet[i].info = circuitSet[i].set_info(g, dual_type)
     kirchhoff_dual = DualCircuit(circuitSet)
-    # kirchhoff_dual.flux_circuit_init_from_networkx([g for g in dual_graph.layer])
-    # kirchhoff_dual.distance_edges()
+
+    kirchhoff_dual.e_adj = graphSet.e_adj
+    kirchhoff_dual.e_adj_idx = graphSet.e_adj_idx
+    kirchhoff_dual.distance_edges()
 
     return kirchhoff_dual
 
@@ -114,87 +117,28 @@ class DualCircuit():
     e_adj_idx: list = field(default_factory=list, repr=False)
     n_adj: list = field(default_factory=list, repr=False)
 
-    # def circuit_init_from_networkx(self, input_graphs):
-    #
-    #     """
-    #     Initialize circuit layers with input graphs.
-    #
-    #     Args:
-    #         input_graphs (list): A list of networkx graph.
-    #
-    #     Returns:
-    #         dual_circuit: A flow_circuit object.
-    #
-    #     """
-    #
-    #     self.layer = []
-    #     for G in input_graphs:
-    #
-    #         self.layer.append(Circuit(G))
-    #
-    # def flow_circuit_init_from_networkx(self, input_graphs ):
-    #
-    #     """
-    #     Initialize flow circuit layers with input graphs.
-    #
-    #     Args:
-    #         input_graphs (list): A list of networkx graph.
-    #
-    #     Returns:
-    #         dual_circuit: A flow_circuit object.
-    #
-    #     """
-    #
-    #     self.layer = []
-    #     for G in input_graphs:
-    #
-    #         self.layer.append(FlowCircuit(G))
-    #
-    # def flux_circuit_init_from_networkx(self, input_graphs ):
-    #     """
-    #     Initialize flux circuit layers with input graphs.
-    #
-    #     Args:
-    #         input_graphs (list): A list of networkx graph.
-    #
-    #     Returns:
-    #         dual_circuit: A flow_circuit object.
-    #
-    #     """
-    #
-    #     self.layer = []
-    #     for G in input_graphs:
-    #
-    #         self.layer.append(FluxCircuit(G))
+    def distance_edges(self):
 
-    # def distance_edges(self):
-    #
-    #     """
-    #     Compute the distance of affiliated edges in the multilayer circuit.
-    #
-    #     """
-    #
-    #
-    #     self.D = np.zeros(len(self.e_adj_idx))
-    #     for i, e in enumerate(self.e_adj_idx):
-    #
-    #         p1 = [q for q in self.layer[0].G.edges[e[0]]['slope']]
-    #         n = p1[0]-p1[1]
-    #
-    #         p2 = [q for q in self.layer[0].G.edges[e[0]]['slope']]
-    #         m = p2[0]-p2[1]
-    #
-    #         q = np.cross(n, m)
-    #         q /= np.linalg.norm(q)
-    #
-    #         c = [self.layer[0].G.edges[u]['slope'][0] for u in e]
-    #         d = c[0]-c[1]
-    #         self.D[i] = np.linalg.norm(np.dot(d, q))
-    #
-    #     s1 = self.layer[0].scales['length']
-    #     s2 = self.layer[1].scales['length']
-    #     self.D /= ((s1+s2)/2.)
-    #
+        """
+        Compute the distance of affiliated edges in the multilayer circuit.
+
+        """
+
+        self.dist_adj = np.zeros(len(self.e_adj_idx))
+
+        for i, e in enumerate(self.e_adj_idx):
+
+            g1 = self.layer[0].G
+            pos1 = [g1.nodes[node]['pos'] for node in e[0]]
+            p1 = np.mean(pos1,axis = 0)
+
+
+            g2 = self.layer[1].G
+            pos2 = [g2.nodes[node]['pos'] for node in e[1]]
+            p2 = np.mean(pos2,axis = 0)
+
+            self.dist_adj[i] = np.linalg.norm(p1-p2)
+
     # def check_no_overlap(self, scale):
     #
     #     """
@@ -219,7 +163,7 @@ class DualCircuit():
     #             break
     #
     #     return check
-    #
+
     # def clipp_graph(self):
     #
     #     """
