@@ -85,13 +85,13 @@ def test_circuit_dual():
     print('test from catenation')
     for k, constr in circuitConstructor.items():
 
-        K = kcd.initialize_dual_from_catenation(k, 'catenation', 3)
+        K = kcd.initialize_dual_from_catenation('catenation', 3, k)
         print(K.layer)
 
     print('test from minsurf')
     for k, constr in circuitConstructor.items():
 
-        K = kcd.initialize_dual_from_minsurf(k, 'simple', 3)
+        K = kcd.initialize_dual_from_minsurf('simple', 3, k)
         print(K.layer)
 
 def test_grid_dual():
