@@ -138,11 +138,10 @@ class FlowCircuit(Circuit):
         self.plexus_mode = {
             'default': self.init_plexus_default,
             'custom': self.init_plexus_custom,
-
         }
 
     # set a certain set of boundary conditions for the given networks
-    def set_source_landscape(self, mode='default', **kwargs):
+    def set_source_landscape(self, modeSRC='default', **kwargs):
 
         """
         Set the internal bounday state of sinks and sources.
@@ -163,14 +162,14 @@ class FlowCircuit(Circuit):
         # else:
         #     print('Warning: Not recognizing certain keywords')
         # call init sources
-        if mode in self.source_mode.keys():
-
-            self.source_mode[mode]()
+        if modeSRC in self.source_mode.keys():
+            print(f'Set source: {modeSRC}')
+            self.source_mode[modeSRC]()
 
         else :
             sys.exit('Whooops,  Error: Define Input/output-flows for the network.')
 
-        self.graph['source_mode'] = mode
+        self.graph['source_mode'] = modeSRC
         self.test_source_consistency()
 
     def set_potential_landscape(self, mode):
@@ -403,7 +402,7 @@ class FlowCircuit(Circuit):
         self.G.graph['potentials'] = idx_potential
 
     # different init plexus functions
-    def set_plexus_landscape(self, mode='default', **kwargs):
+    def set_plexus_landscape(self, modePLX='default', **kwargs):
 
         """
         Set the intial conductivity landscape of the plexus.
@@ -416,17 +415,18 @@ class FlowCircuit(Circuit):
         # optional keywords
 
         if 'plexus' in kwargs:
+
             self.custom = kwargs['plexus']
 
         # call init sources
-        if mode in self.plexus_mode.keys():
-
-            self.plexus_mode[mode]()
+        if modePLX in self.plexus_mode.keys():
+            print(f'Set plexus: {modePLX}')
+            self.plexus_mode[modePLX]()
 
         else :
             sys.exit('Whooops,  Error: Define proper conductancies for  the network.')
 
-        self.graph['plexus_mode'] = mode
+        self.graph['plexus_mode'] = modePLX
         self.test_conductance_consistency()
 
     def init_plexus_default(self):
