@@ -33,7 +33,7 @@ def init_graph_from_crystal(crystal_type, periods):
         'laves': NetworkxLaves,
         'square': NetworkxSquare,
         'hexagonal': NetworkxHexagonal,
-        'trigonal_planar': NetworkxTrigonalPlanar,
+        'triagonal_planar': NetworkxTriagonalPlanar,
         }
 
     if crystal_type in choose_constructor_option:
@@ -674,7 +674,7 @@ class NetworkxSquare(NetworkxCrystal):
                 dnm = [self.G.nodes[nm[0]]['pos'], self.G.nodes[nm[1]]['pos']]
                 self.G.add_edge(*nm)
 
-class NetworkxTrigonalPlanar(NetworkxCrystal):
+class NetworkxTriagonalPlanar(NetworkxCrystal):
 
     """
     A derived class for spatial, planar triangulated graphs.
@@ -792,4 +792,3 @@ class NetworkxHexagonal(NetworkxCrystal):
             # set embedding data
             for n in self.G.nodes():
                 self.G.nodes[n]['pos'] = np.array(self.G.nodes[n]['pos'])
-            

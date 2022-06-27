@@ -22,7 +22,7 @@ import kirchhoff.init_dual as init_dual
 import kirchhoff.draw_networkx as dx
 
 
-def construct_from_graphSet(graphSet, circuit_type):
+def construct_from_graphSet(graphSet, circuit_type='default'):
 
     circuitConstructor = {
         'default' : Circuit,

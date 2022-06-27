@@ -130,6 +130,7 @@ class FlowCircuit(Circuit):
             'root_short': self.init_source_root_short,
             'root_long': self.init_source_root_long,
             'dipole_border': self.init_source_dipole_border,
+            'dipole_wall': self.init_source_dipole_wall,
             'dipole_point': self.init_source_dipole_point,
             'root_multi': self.init_source_root_multi,
             'custom': self.init_source_custom
@@ -283,6 +284,32 @@ class FlowCircuit(Circuit):
 
         self.set_poles_relationship(max_idx, min_idx)
 
+    def init_source_dipole_wall(self):
+
+        """
+        Set sources on one side of the graph, sinks on the opposing side.
+        """
+
+        pos = self.get_pos()
+        dist = {}
+        for n, p in pos.items():
+            dist[n] = np.linalg.norm(p[0])
+
+        vals = list(dist.values())
+        max_x = np.amax(vals)
+        min_x = np.amin(vals)
+
+        max_idx = []
+        min_idx = []
+        for k, v in dist.items():
+            if v == max_x:
+                max_idx.append(k)
+
+            else:
+                min_idx.append(k)
+
+        self.set_poles_relationship(max_idx, min_idx)
+
     def init_source_dipole_point(self):
 
         """
@@ -351,14 +378,17 @@ class FlowCircuit(Circuit):
 
         self.nodes_source = [1, -1, 0]
 
+        # neutral
         for j, n in enumerate(self.list_graph_nodes):
             self.set_source_attributes(j, n, 2)
 
+        # sources
         for i, s in enumerate(sources):
             for j, n in enumerate(self.list_graph_nodes):
                 if n == s:
                     self.set_source_attributes(j, s, 0)
 
+        # sinks
         for i, s in enumerate(sinks):
             for j, n in enumerate(self.list_graph_nodes):
                 if n == s:

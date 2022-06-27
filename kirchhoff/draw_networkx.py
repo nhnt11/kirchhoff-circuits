@@ -142,9 +142,10 @@ def update_layout_dual(fig, options):
     }
 
     axisFormat = dict(
-                showbackground=True,
+                showbackground=False,
                 showticklabels=False,
                 autorange=True,
+                showgrid=False,
         )
 
     if not options['axis']:
@@ -219,7 +220,7 @@ def add_traces_nodes(fig,  options,  input_graph, extra_data):
     }
 
     node_trace = get_node_trace( input_graph,  extra_data, **optN )
-    fig.add_trace( node_trace)
+    fig.add_trace(node_trace)
 
 #auxillary functions generating traces for nodes and edges
 def get_edge_mid_trace(input_graph, extra_data,  **kwargs):
