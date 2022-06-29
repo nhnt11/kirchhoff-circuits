@@ -50,6 +50,7 @@ fig.show()
 ```
 ![hex](./gallery/hexagonal.png)
 ./notebook contains examples to play with in the form of jupyter notebooks
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/felixk1990/kirchhoff-circuits/HEAD?urlpath=https%3A%2F%2Fgithub.com%2Ffelixk1990%2Fkirchhoff-circuits%2Fnotebook)
 ##  Requirements
 ```
 networkx==2.5
