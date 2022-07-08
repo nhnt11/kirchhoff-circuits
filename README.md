@@ -1,5 +1,5 @@
 # kirchhoff
-
+A module for generating kirchhoff circuits on the basis of networkx graphs. To be used in conjunction with the package 'goflow'. For further details and documentation see: <https://felixk1990.github.io/kirchhoff-circuits/>
 ##  Introduction
 This module 'kirchhoff' is part of a series of pyton packages encompassing a set of class and method implementations for a kirchhoff network datatype, which includes a visualization routine based on plotly. The concept is to build kirchhoff networks from networkx graphs, by providing a container for the graphs as well as separate containers for network attributes meant for fast(er) computation in the follow-up modules 'hailhydro' and 'goflow'
 ##  Installation
