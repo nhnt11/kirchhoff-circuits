@@ -1,13 +1,14 @@
-# @Author: Felix Kramer <felixk1990>
-# @Date:   2022-06-28T23:45:46+02:00
+# @Author: Felix Kramer <kramer>
+# @Date:   03-07-2022
 # @Email:  felixuwekramer@proton.me
-# @Filename: io_networkx.py
-# @Last modified by:   felixk1990
-# @Last modified time: 2022-06-28T23:47:03+02:00
+# @Last modified by:   kramer
+# @Last modified time: 08-07-2022
+
+
 import networkx.readwrite.json_graph as nj
 import json
 import numpy as np
-import networkx as nx
+
 
 def loadGraphJson(pathInput):
 
@@ -18,7 +19,8 @@ def loadGraphJson(pathInput):
 
     return G
 
-def saveGraphJson(nxGraph , pathOutput):
+
+def saveGraphJson(nxGraph, pathOutput):
 
     # convert to list types
     for component in [nxGraph.edges(), nxGraph.nodes()]:

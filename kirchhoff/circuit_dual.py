@@ -1,19 +1,16 @@
-# @Author:  Felix Kramer
-# @Date:   2021-05-22T13:11:37+02:00
-# @Email:  kramer@mpi-cbg.de
-# @Project: go-with-the-flow
-# @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-07T16:06:52+01:00
-# @License: MIT
+# @Author: Felix Kramer <kramer>
+# @Date:   07-11-2021
+# @Email:  felixuwekramer@proton.me
+# @Last modified by:   kramer
+# @Last modified time: 08-07-2022
 
-import networkx as nx
+
 import numpy as np
-import scipy.linalg as lina
 from dataclasses import dataclass, field
 # custom embeddings/architectures for mono networkx
-from kirchhoff.circuit_init import *
-from kirchhoff.circuit_flow import *
-from kirchhoff.circuit_flux import *
+from kirchhoff.circuit_init import Circuit
+from kirchhoff.circuit_flow import FlowCircuit
+from kirchhoff.circuit_flux import FluxCircuit
 
 # custom primer
 import kirchhoff.init_dual as init_dual
@@ -25,10 +22,10 @@ import kirchhoff.draw_networkx as dx
 def construct_from_graphSet(graphSet, circuit_type='default'):
 
     circuitConstructor = {
-        'default' : Circuit,
-        'circuit' : Circuit,
-        'flow' : FlowCircuit,
-        'flux' : FluxCircuit,
+        'default': Circuit,
+        'circuit': Circuit,
+        'flow': FlowCircuit,
+        'flux': FluxCircuit,
         }
 
     circuitSet = []
@@ -48,15 +45,22 @@ def construct_from_graphSet(graphSet, circuit_type='default'):
 
     return circuitSet
 
-def initialize_dual_from_catenation(dual_type='catenation', num_periods=1, circuit_type='default'):
+
+def initialize_dual_from_catenation(
+        dual_type='catenation',
+        num_periods=1,
+        circuit_type='default'
+        ):
 
     """
     Initialize a dual spatially embedded circuit, with internal graphs based on
     simple catenatednetwork skeletons.
 
     Args:
-        dual_type (string): The type of dual skeleton (simple, diamond, laves, catenation).
-        num_periods (int): Repetition number of the lattice's unit cell.
+        dual_type (string):\n
+            The type of dual skeleton (simple, diamond, laves, catenation).
+        num_periods (int):\n
+            Repetition number of the lattice's unit cell.
 
     Returns:
         dual_circuit: A dual circuit system.
@@ -72,14 +76,21 @@ def initialize_dual_from_catenation(dual_type='catenation', num_periods=1, circu
 
     return kirchhoff_dual
 
-def initialize_dual_from_minsurf(dual_type='simple', num_periods=2, circuit_type='default'):
+
+def initialize_dual_from_minsurf(
+        dual_type='simple',
+        num_periods=2,
+        circuit_type='default'
+        ):
     """
-    Initialize a dual spatially embedded flux circuit, with internal graphs based on
-     the network skeletons of triply-periodic minimal surfaces.
+    Initialize a dual spatially embedded flux circuit, with internal graphs
+    based on the network skeletons of triply-periodic minimal surfaces.
 
     Args:
-        dual_type (string): The type of dual skeleton (simple, diamond, laves, catenation).
-        num_periods (int): Repetition number of the lattice's unit cell.
+        dual_type (string):\n
+            The type of dual skeleton (simple, diamond, laves, catenation).
+        num_periods (int):\n
+            Repetition number of the lattice's unit cell.
 
     Returns:
         dual_circuit: A flow_circuit object.
@@ -98,6 +109,7 @@ def initialize_dual_from_minsurf(dual_type='simple', num_periods=2, circuit_type
 
     return kirchhoff_dual
 
+
 @dataclass
 class DualCircuit():
 
@@ -106,9 +118,14 @@ class DualCircuit():
 
     Attributes
     ----------
-        layer (list): List of the graphs contained in the multilayer circuit.
-        e_adj (list): A list off edge affiliation between the different layers, edge view.
-        e_adj_idx (list): A list off edge affiliation between the different layers, label view.
+        layer (list):\n
+            List of the graphs contained in the multilayer circuit.
+        e_adj (list):\n
+            A list off edge affiliation between the different layers, edge
+            view.
+        e_adj_idx (list):\n
+            A list off edge affiliation between the different layers, label
+            view.
         n_adj (list): An internal nodal varaible.
     """
 
@@ -130,19 +147,19 @@ class DualCircuit():
 
             g1 = self.layer[0].G
             pos1 = [g1.nodes[node]['pos'] for node in e[0]]
-            p1 = np.mean(pos1,axis = 0)
-
+            p1 = np.mean(pos1, axis=0)
 
             g2 = self.layer[1].G
             pos2 = [g2.nodes[node]['pos'] for node in e[1]]
-            p2 = np.mean(pos2,axis = 0)
+            p2 = np.mean(pos2, axis=0)
 
             self.dist_adj[i] = np.linalg.norm(p1-p2)
 
     # def check_no_overlap(self, scale):
     #
     #     """
-    #     Test whether the multilayer systems have geometrically overlapping edges.
+    #     Test whether the multilayer systems have geometrically
+    # overlapping edges.
     #
     #     Returns:
     #         bool: True if systems geometrically overlap, otherwise False
@@ -167,7 +184,8 @@ class DualCircuit():
     # def clipp_graph(self):
     #
     #     """
-    #     Prune the internal graph variables, using an edge weight threshold criterium.
+    #     Prune the internal graph variables, using an edge weight threshold
+    # criterium.
     #     """
     #
     #     for i in range(2):
@@ -178,12 +196,14 @@ class DualCircuit():
 
         """
         Use Plotly.GraphObjects to create interactive plots that have
-         optionally the graph atributes displayed.
+        optionally the graph atributes displayed.
         Args:
-            kwargs (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+            kwargs (dictionary):\n
+                A dictionary for plotly keywords customizing the plots' layout.
 
         Returns:
-            plotly.graph_objects.Figure: A plotly figure displaying the circuit.
+            plotly.graph_objects.Figure: A plotly figure displaying the
+            circuit.
 
         """
         fig = dx.plot_networkx_dual(self, *args, **kwargs)

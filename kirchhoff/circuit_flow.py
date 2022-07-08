@@ -1,31 +1,34 @@
-# @Author:  Felix Kramer <kramer>
-# @Date:   2021-05-08T20:35:25+02:00
-# @Email:  kramer@mpi-cbg.de
-# @Project: go-with-the-flow
-# @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-07T16:06:39+01:00
-# @License: MIT
+# @Author: Felix Kramer <kramer>
+# @Date:   07-11-2021
+# @Email:  felixuwekramer@proton.me
+# @Last modified by:   kramer
+# @Last modified time: 08-07-2022
 
-import random as rd
+
 import networkx as nx
 import numpy as np
 import sys
 import pandas as pd
 from dataclasses import dataclass, field
 # custom embeddings/architectures
-from kirchhoff.circuit_init import *
+from kirchhoff.circuit_init import Circuit
 import kirchhoff.init_crystal as init_crystal
 import kirchhoff.init_random as init_random
+import kirchhoff.draw_networkx as dx
 
 
 def initialize_flow_circuit_from_crystal(crystal_type='default', periods=1):
 
     """
-    Initialize a flow circuit from a spatially embedded, crystal networkx graph.
+    Initialize a flow circuit from a spatially embedded, crystal networkx
+    graph.
 
     Args:
-        crystal_type (string): The type of crystal skeleton (default, simple, chain, bcc, fcc, diamond, laves, square, hexagonal, trigonal_planar).
-        periods (int): Repetition number of the lattice's unit cell.
+        crystal_type (string):\n
+            The type of crystal skeleton (default, simple, chain, bcc, fcc,
+            diamond, laves, square, hexagonal, trigonal_planar).
+        periods (int):\n
+            Repetition number of the lattice's unit cell.
 
     Returns:
         flow_circuit: A flow_circuit object.
@@ -38,26 +41,40 @@ def initialize_flow_circuit_from_crystal(crystal_type='default', periods=1):
 
     return kirchhoff_graph
 
-def initialize_flow_circuit_from_random(random_type='default', periods=10, sidelength=1):
+
+def initialize_flow_circuit_from_random(
+        random_type='default',
+        periods=10,
+        sidelength=1
+        ):
 
     """
     Initialize a flow circuit from a random, spatially embedded networkx graph.
 
     Args:
-        random_type (string): The type of random lattice to be constructed(voronoi_planar, voronoi_volume).
-        periods (int): Number of random points.
-        sidelength (float): The box size into which random points in space are generated.
+        random_type (string):\n
+            The type of random lattice to be constructed(voronoi_planar,
+            voronoi_volume).
+        periods (int):\n
+            Number of random points.
+        sidelength (float):\n
+            The box size into which random points in space are generated.
 
     Returns:
         flow_circuit: A flow_circuit object.
 
     """
 
-    input_graph = init_random.init_graph_from_random(random_type, periods, sidelength)
+    input_graph = init_random.init_graph_from_random(
+                                                        random_type,
+                                                        periods,
+                                                        sidelength
+                                                    )
     kirchhoff_graph = FlowCircuit(input_graph)
     kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, random_type)
 
     return kirchhoff_graph
+
 
 def setup_default_flow_circuit(skeleton=None):
 
@@ -78,22 +95,33 @@ def setup_default_flow_circuit(skeleton=None):
 
     return kirchhoff_graph
 
-def setup_flow_circuit(skeleton=None, sourceMode=None, plexusMode=None, **kwargs):
+
+def setup_flow_circuit(
+        skeleton=None,
+        sourceMode=None,
+        plexusMode=None,
+        **kwargs
+        ):
 
     """
-    Initialize a flow circuit from a given networkx graph and dictioinary of boundary conditions.
+    Initialize a flow circuit from a given networkx graph and dictioinary of
+    boundary conditions.
 
     Args:
-        skeleton (nx.Graph): A networkx graph.
-        source (string): A key for source_mode (default, root_geometric, root_short, root_long, dipole_border, dipole_point, root_multi, custom).
-        plexus (string): A key for plexus_mode.(default, custom)
+        skeleton (nx.Graph):\n
+            A networkx graph.
+        source (string):\n
+            A key for source_mode (default, root_geometric, root_short,
+            root_long, dipole_border, dipole_point, root_multi, custom).
+        plexus (string):\n
+            A key for plexus_mode.(default, custom)
 
     Returns:
         flow_circuit: A flow_circuit object.
 
     """
 
-    kirchhoff_graph = initialize_flow_circuit_from_networkx(skeleton)
+    kirchhoff_graph = FlowCircuit(skeleton)
     kirchhoff_graph.set_source_landscape(sourceMode, **kwargs)
     kirchhoff_graph.set_plexus_landscape(plexusMode, **kwargs)
 
@@ -109,8 +137,10 @@ class FlowCircuit(Circuit):
     Attributes
     ----------
 
-        source_mode (dictionary): A dictionary of custom source-sink boundaries.
-        plexus_mode (dictionary): A dictionary of custom plexus initializations.
+        source_mode (dictionary):\n
+            A dictionary of custom source-sink boundaries.
+        plexus_mode (dictionary):\n
+            A dictionary of custom plexus initializations.
 
     """
 
@@ -167,8 +197,10 @@ class FlowCircuit(Circuit):
             print(f'Set source: {modeSRC}')
             self.source_mode[modeSRC]()
 
-        else :
-            sys.exit('Whooops,  Error: Define Input/output-flows for the network.')
+        else:
+            sys.exit(
+                'Whooops, Error: Define Input/output-flows for the network.'
+                )
 
         self.graph['source_mode'] = modeSRC
         self.test_source_consistency()
@@ -194,7 +226,9 @@ class FlowCircuit(Circuit):
                 self.nodes.at[j, 'source'] = s
 
         else:
-            print('Warning, custom source values ill defined, setting default!')
+            print(
+                'Warning, custom source values ill defined, setting default!'
+                )
             self.init_source_default()
 
     def init_source_default(self):
@@ -237,7 +271,7 @@ class FlowCircuit(Circuit):
         dist = {}
         for n, p in pos.items():
             dist[n] = np.linalg.norm(p)
-        sorted_dist = sorted(dist, key = dist.__getitem__)
+        sorted_dist = sorted(dist, key=dist.__getitem__)
 
         self.set_root_leaves_relationship(sorted_dist[0])
 
@@ -297,7 +331,6 @@ class FlowCircuit(Circuit):
 
         vals = list(dist.values())
         max_x = np.amax(vals)
-        min_x = np.amin(vals)
 
         max_idx = []
         min_idx = []
@@ -316,7 +349,6 @@ class FlowCircuit(Circuit):
         Set a single source-sink pair.
         """
 
-        pos = self.get_pos()
         dist = {}
         for j, n in enumerate(self.list_graph_nodes[:-2]):
             for i, m in enumerate(self.list_graph_nodes[j+1:]):
@@ -339,8 +371,13 @@ class FlowCircuit(Circuit):
         Set multiple random sources, sinks otherwise.
         """
 
-        idx = np.random.choice(self.list_graph_nodes, size=self.graph['num_sources'])
-        self.nodes_source = [self.G.number_of_nodes()/self.graph['num_sources']-1, -1]
+        idx = np.random.choice(
+            self.list_graph_nodes, size=self.graph['num_sources']
+            )
+        self.nodes_source = [
+                self.G.number_of_nodes()/self.graph['num_sources']-1,
+                -1
+                ]
 
         for j, n in enumerate(self.list_graph_nodes):
 
@@ -453,8 +490,10 @@ class FlowCircuit(Circuit):
             print(f'Set plexus: {modePLX}')
             self.plexus_mode[modePLX]()
 
-        else :
-            sys.exit('Whooops,  Error: Define proper conductancies for  the network.')
+        else:
+            sys.exit(
+                'Whooops, Error: Define proper conductancies for the network.'
+                )
 
         self.graph['plexus_mode'] = modePLX
         self.test_conductance_consistency()
@@ -487,7 +526,12 @@ class FlowCircuit(Circuit):
                 self.edges['conductivity'][j] = c
         else:
 
-            print('Warning,  custom conductance values ill defined,  setting default !')
+            print(
+                '''
+                Warning, custom conductance values ill defined, setting
+                default!
+                '''
+                )
             self.init_plexus_default()
 
     # output with draw_netowrkx
@@ -497,18 +541,16 @@ class FlowCircuit(Circuit):
         Get internal nodal DataFrame columns by keywords.
 
         Args:
-            args (list): A list of keywords to check for in the internal DataFrames.
+            args (list):\n
+                A list of keywords to check for in the internal DataFrames.
 
         Returns:
             pd.DataFrame: A cliced DataFrame.
 
-        Raises:
-            Exception: description
-
         """
 
         cols = ['label', 'source']
-        cols+= [a for a in args if a in self.nodes.columns]
+        cols += [a for a in args if a in self.nodes.columns]
 
         dn = pd.DataFrame(self.nodes[cols])
 
@@ -520,13 +562,11 @@ class FlowCircuit(Circuit):
         Get internal nodal DataFrame columns by keywords.
 
         Args:
-            args (list): A list of keywords to check for in the internal DataFrames.
+            args (list):\n
+                A list of keywords to check for in the internal DataFrames.
 
         Returns:
             pd.DataFrame: A cliced DataFrame.
-
-        Raises:
-            Exception: description
 
         """
 
@@ -541,13 +581,18 @@ class FlowCircuit(Circuit):
 
         """
         Use Plotly.GraphObjects to create interactive plots that have
-         optionally the graph atributes displayed.
+        optionally the graph atributes displayed.
+
         Args:
-            args (list): A list of keywords for the internal edge and nodal DataFrames which are to be displayed.
-            kwargs (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+            args (list):\n
+                A list of keywords for the internal edge and nodal DataFrames
+                which are to be displayed.
+            kwargs (dictionary):\n
+                A dictionary for plotly keywords customizing the plots' layout.
 
         Returns:
-            plotly.graph_objects.Figure: A plotly figure displaying the circuit.
+            plotly.graph_objects.Figure: A plotly figure displaying the
+            circuit.
 
         """
 
@@ -561,9 +606,9 @@ class FlowCircuit(Circuit):
             'edge_data': E,
             'node_data': V
         }
-        if type(kwargs) != None:
+        if type(kwargs) is not None:
             opt.update(kwargs)
-        # print(opt)
+
         fig = dx.plot_networkx(self.G, **opt)
 
         return fig

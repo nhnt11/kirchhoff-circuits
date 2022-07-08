@@ -1,27 +1,27 @@
-# @Author:  Felix Kramer
-# @Date:   2021-05-23T15:58:07+02:00
-# @Email:  kramer@mpi-cbg.de
-# @Project: go-with-the-flow
-# @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-07T15:47:40+01:00
-# @License: MIT
+# @Author: Felix Kramer <kramer>
+# @Date:   24-02-2022
+# @Email:  felixuwekramer@proton.me
+# @Last modified by:   kramer
+# @Last modified time: 08-07-2022
+
 
 import networkx as nx
 import numpy as np
-import kirchhoff.init_crystal
 from scipy.spatial import Voronoi
-import kirchhoff.init_crystal  as init_crystal
-from dataclasses import dataclass, field
+import kirchhoff.init_crystal as init_crystal
+
 
 def init_dual_minsurf_graphs(dual_type, num_periods):
 
     """
-    Initialize a dual spatially embedded multilayer graph, with internal graphs based on
-     the network skeletons of triply-periodic minimal surfaces.
+    Initialize a dual spatially embedded multilayer graph, with internal graphs
+    based on the network skeletons of triply-periodic minimal surfaces.
 
     Args:
-        dual_type (string): The type of dual skeleton (simple, diamond, laves, catenation).
-        num_periods (int): Repetition number of the lattice's unit cell.
+        dual_type (string):\n
+            The type of dual skeleton (simple, diamond, laves, catenation).
+        num_periods (int):\n
+            Repetition number of the lattice's unit cell.
 
     Returns:
         NetworkxDual: A dual networkx object.
@@ -31,11 +31,11 @@ def init_dual_minsurf_graphs(dual_type, num_periods):
     plexus_mode = {
         'default': NetworkxDualSimple,
         'simple': NetworkxDualSimple,
-        'diamond':NetworkxDualDiamond,
-        'laves':NetworkxDualLaves,
+        'diamond': NetworkxDualDiamond,
+        'laves': NetworkxDualLaves,
     }
 
-    if  dual_type in plexus_mode:
+    if dual_type in plexus_mode:
         dual_graph = plexus_mode[dual_type](num_periods)
 
     else:
@@ -44,33 +44,37 @@ def init_dual_minsurf_graphs(dual_type, num_periods):
 
     return dual_graph
 
+
 def init_dualCatenation(dual_type, num_periods):
 
     """
-    Initialize a dual spatially embedded multilayer graph, with internal graphs based on
-    simple catenated network skeletons.
+    Initialize a dual spatially embedded multilayer graph, with internal graphs
+    based on simple catenated network skeletons.
 
     Args:
-        dual_type (string): The type of dual skeleton (simple, diamond, laves, catenation).
-        num_periods (int): Repetition number of the lattice's unit cell.
+        dual_type (string):\n
+            The type of dual skeleton (simple, diamond, laves, catenation).
+        num_periods (int):\n
+            Repetition number of the lattice's unit cell.
 
     Returns:
         NetworkxDual: A dual networkx object.
 
     """
-    plexus_mode={
+    plexus_mode = {
         'default': NetworkxDualCatenation,
         'catenation': NetworkxDualCatenation,
         'crossMesh': NetworkxDualCrossMesh,
     }
 
-    if  dual_type in plexus_mode:
+    if dual_type in plexus_mode:
         dual_graph = plexus_mode[dual_type](num_periods)
     else:
         print('Warning: Invalid graph mode, choose default')
         dual_graph = plexus_mode['default'](num_periods)
 
     return dual_graph
+
 
 class NetworkxDual(init_crystal.NetworkxCrystal):
 
@@ -79,16 +83,19 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
 
     Attributes
     ----------
-        layer (list): List of the graphs contained in the multilayer network.
-        lattice_constant (float): Scale for the spacing between the networks.
-        translation_length (float): Scale for the translation difference between the multiple networks.
+        layer (list):\n
+            List of the graphs contained in the multilayer network.
+        lattice_constant (float):\n
+            Scale for the spacing between the networks.
+        translation_length (float):\n
+            Scale for the translation difference between the multiple networks.
 
     """
     def __init__(self):
 
         """
         A constructor for multilayer circuit objects, setting default values
-         for the interal graph objects and geometry
+        for the interal graph objects and geometry
         """
 
         super(NetworkxDual, self).__init__()
@@ -116,7 +123,7 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
         for i in periods:
             for j in periods:
                 for k in periods:
-                    if (i+j+k) %2 == 0:
+                    if (i+j+k) % 2 == 0:
                         v = self.translation_length*np.array([i, j, k])
                         TD = self.lattice_translation(offset+v, cell)
                         L.add_nodes_from(TD.nodes(data=True))
@@ -129,9 +136,12 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
         Remove non-affiliated edges in dual graphs.
 
         Args:
-            G(nx.Graph): A networkx graph.
-            H (nx.Graph): A networkx graph.
-            adj (list): A list of affiliated edge pairs of the two graphs.
+            G(nx.Graph):\n
+                A networkx graph.
+            H (nx.Graph):\n
+                A networkx graph.
+            adj (list):\n
+                A list of affiliated edge pairs of the two graphs.
 
         Returns:
             list: A list of networkx graphs.
@@ -144,7 +154,7 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
             adj_x = np.array(adj)[:, i]
             list_e = list(K[i].edges())
             for e in list_e:
-                if np.any( np.array(adj_x) == K[i].edges[e]['label']):
+                if np.any(np.array(adj_x) == K[i].edges[e]['label']):
                     continue
                 else:
                     K[i].remove_edge(*e)
@@ -162,9 +172,12 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
         Relabel affiliations and graph attributes.
 
         Args:
-            G(nx.Graph): A networkx graph.
-            H (nx.Graph): A networkx graph.
-            adj (list): A list of affiliated edge pairs of the two graphs.
+            G(nx.Graph):\n
+                A networkx graph.
+            H (nx.Graph):\n
+                A networkx graph.
+            adj (list):\n
+                A list of affiliated edge pairs of the two graphs.
 
         Returns:
             list: A list of networkx graphs.
@@ -181,8 +194,8 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
 
             for idx_n, n in enumerate(K[i].nodes()):
                 opt = {
-                'pos': K[i].nodes[n]['pos'],
-                'label': K[i].nodes[n]['label']
+                    'pos': K[i].nodes[n]['pos'],
+                    'label': K[i].nodes[n]['label']
                 }
                 P[i].add_node(idx_n, **opt)
                 dict_P[i][0].update({n: idx_n})
@@ -190,16 +203,17 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
 
             for idx_e, e in enumerate(K[i].edges()):
                 opt = {
-                # 'slope': [K[i].nodes[e[0]]['pos'], K[i].nodes[e[1]]['pos']],
-                'label': K[i].edges[e]['label']
+                    # 'slope': [K[i].nodes[e[0]]['pos'],
+                    # K[i].nodes[e[1]]['pos']],
+                    'label': K[i].edges[e]['label']
                 }
                 v, u = dict_P[i][0][e[0]], dict_P[i][0][e[1]]
 
                 P[i].add_edge(v, u, **opt)
 
             for j, e in enumerate(P[i].edges()):
-                dict_P[i][1].update({P[i].edges[e]['label']:j})
-                dict_P[i][2].update({P[i].edges[e]['label']:e})
+                dict_P[i][1].update({P[i].edges[e]['label']: j})
+                dict_P[i][2].update({P[i].edges[e]['label']: e})
 
         for a in adj:
 
@@ -219,8 +233,8 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
             for key in aff[i].keys():
                 aff[i][key] = list(set(aff[i][key]))
                 aux = []
-                for l in aff[i][key]:
-                    aux.append(dict_P[-(i+1)][1][l])
+                for j in aff[i][key]:
+                    aux.append(dict_P[-(i+1)][1][j])
                 aff[i][key] = aux
 
         self.e_adj = e_adj
@@ -235,8 +249,10 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
         Relabel affiliations and graph attributes.
 
         Args:
-            G (nx.Graph): The inner networkx graph.
-            H (nx.Graph): The outer networkx graph.
+            G (nx.Graph):\n
+                The inner networkx graph.
+            H (nx.Graph):\n
+                The outer networkx graph.
 
         Returns:
             list:  A list of affiliated edge pairs of the two graphs.
@@ -254,6 +270,7 @@ class NetworkxDual(init_crystal.NetworkxCrystal):
 
         return adj
 
+
 class NetworkxDualSimple(NetworkxDual):
     """
     A class for spatial, dual cubic circuits.
@@ -261,16 +278,19 @@ class NetworkxDualSimple(NetworkxDual):
     Attributes
     ----------
 
-        layer (list): List of the mutlilayered circuits.
-        lattice_constant (float): Scale for the spacing between the networks.
-        translation_length (float): Scale for the translation difference between the multiple networks.
+        layer (list):\n
+            List of the mutlilayered circuits.
+        lattice_constant (float):\n
+            Scale for the spacing between the networks.
+        translation_length (float):\n
+            Scale for the translation difference between the multiple networks.
 
     """
     def __init__(self, num_periods):
 
         """
         A constructor for multilayer circuit simple objects, setting default
-         values for the interal graph objects and geometry
+        values for the interal graph objects and geometry
         """
 
         super(NetworkxDualSimple, self).__init__()
@@ -284,7 +304,8 @@ class NetworkxDualSimple(NetworkxDual):
         Set internal networks structure, dual cubic.
 
         Args:
-            num_periods (int): A networkx graph.
+            num_periods (int):\n
+                A networkx graph.
 
         """
 
@@ -292,13 +313,13 @@ class NetworkxDualSimple(NetworkxDual):
         # creating voronoi cells, with defined ridge structure
         ic = init_crystal.NetworkxSimple(1)
         unit_cell = ic.simple_unit_cell()
-        self.periodic_cell_structure(unit_cell,num_periods)
+        self.periodic_cell_structure(unit_cell, num_periods)
         points = [self.G.nodes[n]['pos'] for i, n in enumerate(self.G.nodes())]
         V = Voronoi(points)
 
         # construct caged networks from given point clouds, with corresponding
-         # adjacency list of edges
-        G1, G2=self.init_graph_nuclei(V)
+        # adjacency list of edges
+        G1, G2 = self.init_graph_nuclei(V)
 
         adj = self.set_graph_adjacency(V, G1, G2)
 
@@ -314,14 +335,17 @@ class NetworkxDualSimple(NetworkxDual):
 
         """
         Generate points for a cubic lattice and its dual via Voronois
-         tesselation and return dual graph representations.
+        tesselation and return dual graph representations.
 
         Args:
-            Voronoi (scipy.spatial.Voronoi): A Tesselation object.
+            Voronoi (scipy.spatial.Voronoi):\n
+                A Tesselation object.
 
         Return:
-            nx.Graph: Inner networkx graph.
-            nx.Graph: Outer networkx graph.
+            nx.Graph:\n
+                Inner networkx graph.
+            nx.Graph:\n
+                Outer networkx graph.
 
         """
         H = nx.Graph()
@@ -335,9 +359,9 @@ class NetworkxDualSimple(NetworkxDual):
             counter_n += 1
 
         counter_n = 0
-        for j,p in enumerate(list_p):
+        for j, p in enumerate(list_p):
             G.add_node(j, pos=p, label=counter_n)
-            counter_n+=1
+            counter_n += 1
 
         counter_e = 0
         for i, n in enumerate(list_p[:-1]):
@@ -355,19 +379,22 @@ class NetworkxDualSimple(NetworkxDual):
         Return the affiliation list of two dual cubic lattices.
 
         Args:
-            Voronoi (scipy.spatial.Voronoi): A Voronoi-Tesselation object.
-            G (nx.Graph): The inner networkx graph.
-            H (nx.Graph): The outer networkx graph.
+            Voronoi (scipy.spatial.Voronoi):\n
+                A Voronoi-Tesselation object.
+            G (nx.Graph):\n
+                The inner networkx graph.
+            H (nx.Graph):\n
+                The outer networkx graph.
 
         Return:
-            list: The edge affiliation list of the dual cubic lattice.
+            list:\n
+                The edge affiliation list of the dual cubic lattice.
 
         """
         rv_aux = []
         rp_aux = []
         adj = []
 
-        list_p = np.array(list(V.points))
         for rv, rp in zip(V.ridge_vertices, V.ridge_points):
             if np.any(np.array(rv) == -1):
                 continue
@@ -386,8 +413,8 @@ class NetworkxDualSimple(NetworkxDual):
 
                 if not H.has_edge(*E2):
                     options = {
-                    # 'slope': (V.vertices[e1], V.vertices[e2]),
-                    'label': counter_e
+                        # 'slope': (V.vertices[e1], V.vertices[e2]),
+                        'label': counter_e
                     }
                     H.add_edge(*E2, **options)
                     counter_e += 1
@@ -395,6 +422,7 @@ class NetworkxDualSimple(NetworkxDual):
                     adj.append([G.edges[E1]['label'], H.edges[E2]['label']])
 
         return adj
+
 
 class NetworkxDualDiamond(NetworkxDual):
 
@@ -404,16 +432,19 @@ class NetworkxDualDiamond(NetworkxDual):
     Attributes
     ----------
 
-        layer (list): List of the mutlilayered circuits.
-        lattice_constant (float): Scale for the spacing between the networks.
-        translation_length (float): Scale for the translation difference between the multiple networks.
+        layer (list):\n
+            List of the mutlilayered circuits.
+        lattice_constant (float):\n
+            Scale for the spacing between the networks.
+        translation_length (float):\n
+            Scale for the translation difference between the multiple networks.
 
     """
     def __init__(self, num_periods):
 
         """
-        A constructor for multilayer circuit diamond objects, setting default values
-         for the interal graph objects and geometry
+        A constructor for multilayer circuit diamond objects, setting default
+        values for the interal graph objects and geometry
         """
 
         super(NetworkxDualDiamond, self).__init__()
@@ -427,14 +458,13 @@ class NetworkxDualDiamond(NetworkxDual):
         Set internal networks structure, dual diamond.
 
         Args:
-            num_periods (int): Repetition number of the unit cells.
+            num_periods (int):\n
+                Repetition number of the unit cells.
 
         """
 
         # create primary point cloud with lattice structure
         adj = []
-        adj_idx = []
-        aff = [{}, {}]
 
         ic = init_crystal.NetworkxDiamond(1)
         unit_cell = ic.diamond_unit_cell()
@@ -450,7 +480,7 @@ class NetworkxDualDiamond(NetworkxDual):
         adj = self.set_graph_adjacency(G1, G2)
 
         # cut off redundant (non-connected or neigborless) points/edges
-        G1, G2=self.prune_leaves(G1, G2, adj)
+        G1, G2 = self.prune_leaves(G1, G2, adj)
 
         # relabeling network nodes/edges & adjacency-list
         P = self.relabel_networkx(G1, G2, adj)
@@ -463,12 +493,16 @@ class NetworkxDualDiamond(NetworkxDual):
          and return dual graph representations.
 
         Args:
-            G_aux (nx.Graph): Inner networkx graph.
-            H_aux (nx.Graph): Outer networkx graph.
+            G_aux (nx.Graph):\n
+                Inner networkx graph.
+            H_aux (nx.Graph):\n
+                Outer networkx graph.
 
         Returns:
-            nx.Graph: Inner networkx graph.
-            nx.Graph: Outer networkx graph.
+            nx.Graph:\n
+                Inner networkx graph.
+            nx.Graph:\n
+                Outer networkx graph.
 
         """
 
@@ -480,13 +514,16 @@ class NetworkxDualDiamond(NetworkxDual):
     def init_graph(self, G_aux):
 
         """
-        Generate points for a diamond lattice return dual graph representations.
+        Generate points for a diamond lattice return dual graph
+        representations.
 
         Args:
-            G_aux (nx.Graph): A networkx graph.
+            G_aux (nx.Graph):\n
+                A networkx graph.
 
         Returns:
-            nx.Graph: A networkx graph.
+            nx.Graph:\n
+                A networkx graph.
 
         """
 
@@ -496,7 +533,7 @@ class NetworkxDualDiamond(NetworkxDual):
         counter_n = 0
 
         for i, n in enumerate(G_aux.nodes()):
-            G.add_node(i, pos=G_aux.nodes[n]['pos'], label=counter_n )
+            G.add_node(i, pos=G_aux.nodes[n]['pos'], label=counter_n)
             counter_n += 1
 
         for i, n in enumerate(points_G[:-1]):
@@ -509,6 +546,7 @@ class NetworkxDualDiamond(NetworkxDual):
 
         return G
 
+
 class NetworkxDualLaves(NetworkxDual):
 
     """
@@ -517,15 +555,17 @@ class NetworkxDualLaves(NetworkxDual):
     Attributes
     ----------
 
-        layer (list): List of the mutlilayered circuits.
-        lattice_constant (float): Scale for the spacing between the networks.
+        layer (list):\n
+            List of the mutlilayered circuits.
+        lattice_constant (float):\n
+            Scale for the spacing between the networks.
 
     """
     def __init__(self, num_periods):
 
         """
-        A constructor for multilayer circuit laves objects, setting default values
-         for the interal graph objects and geometry
+        A constructor for multilayer circuit laves objects, setting default
+        values for the interal graph objects and geometry
         """
 
         super(NetworkxDualLaves, self).__init__()
@@ -540,12 +580,13 @@ class NetworkxDualLaves(NetworkxDual):
         Set internal networks structure, dual diamond.
 
         Args:
-            num_periods (int): A networkx graph.
+            num_periods (int):\n
+                A networkx graph.
 
         """
 
-        G_aux = self.laves_graph(num_periods, 'R',[0., 0., 0.])
-        H_aux = self.laves_graph(num_periods, 'L',[3., 2., 0.])
+        G_aux = self.laves_graph(num_periods, 'R', [0., 0., 0.])
+        H_aux = self.laves_graph(num_periods, 'L', [3., 2., 0.])
 
         G1, G2 = self.init_graph_nuclei(G_aux, H_aux)
 
@@ -562,13 +603,16 @@ class NetworkxDualLaves(NetworkxDual):
     def laves_graph(self, num_periods, chirality, offset):
 
         """
-        Generate points for a Laves lattice and its dual via mirroring + translation
-         and return dual graph representations.
+        Generate points for a Laves lattice and its dual via mirroring +
+        translation and return dual graph representations.
 
         Args:
-            num_periods (int): Repetition number of the unit cells..
-            chirality (string): Chirality identifier for the current lattice generator.
-            offset (ndarray): A translation vector.
+            num_periods (int):\n
+                Repetition number of the unit cells..
+            chirality (string):\n
+                Chirality identifier for the current lattice generator.
+            offset (ndarray):\n
+                A translation vector.
 
 
         Returns:
@@ -576,29 +620,43 @@ class NetworkxDualLaves(NetworkxDual):
 
         """
 
-        counter = 0
         L = nx.Graph()
         periods = range(num_periods)
 
-        fundamental_points = [[0, 0, 0], [1 ,1 ,0], [1 ,2, 1], [0, 3, 1],
-         [2, 2, 2], [3, 3, 2], [3, 0, 3], [2, 1, 3]]
+        fundamental_points = [
+            [0, 0, 0],
+            [1, 1, 0],
+            [1, 2, 1],
+            [0, 3, 1],
+            [2, 2, 2],
+            [3, 3, 2],
+            [3, 0, 3],
+            [2, 1, 3]
+            ]
         if chirality == 'R':
 
-            for l, fp in enumerate(fundamental_points):
+            for fp in fundamental_points:
                 for i in periods:
                     for j in periods:
                         for k in periods:
 
-                            pos_n=np.add(np.add(fp,[4.*i, 4.*j, 4.*k]), offset)
+                            pos_n = np.add(
+                                np.add(fp, [4.*i, 4.*j, 4.*k]), offset
+                                )
                             L.add_node(tuple(pos_n), pos=pos_n)
         if chirality == 'L':
-            for l, fp in enumerate(fundamental_points):
+            for fp in fundamental_points:
                 for i in periods:
                     for j in periods:
                         for k in periods:
 
-                            pos_n=np.add(np.add(np.multiply(fp, [-1., 1., 1.]),
-                             [4.*i, 4.*j, 4.*k]), offset)
+                            pos_n = np.add(
+                                np.add(
+                                    np.multiply(fp, [-1., 1., 1.]),
+                                    [4.*i, 4.*j, 4.*k]
+                                ),
+                                offset
+                                )
                             L.add_node(tuple(pos_n), pos=pos_n)
 
         return L
@@ -607,11 +665,13 @@ class NetworkxDualLaves(NetworkxDual):
 
         """
         Generate points for a Laves lattice and its dual via mirroring +
-         translation and return dual graph representations.
+        translation and return dual graph representations.
 
         Args:
-            G_aux (nx.Graph): Inner networkx graph.
-            H_aux (nx.Graph): Outer networkx graph.
+            G_aux (nx.Graph):\n
+                Inner networkx graph.
+            H_aux (nx.Graph):\n
+                Outer networkx graph.
 
         Returns:
             nx.Graph: A networkx graph
@@ -629,7 +689,8 @@ class NetworkxDualLaves(NetworkxDual):
         Built labeled, attributed graphs from raw point sets.
 
         Args:
-            G_aux (nx.Graph): Inner networkx graph holding unlabeled data.
+            G_aux (nx.Graph):\n
+                Inner networkx graph holding unlabeled data.
 
         Returns:
             nx.Graph: A networkx graph
@@ -637,12 +698,11 @@ class NetworkxDualLaves(NetworkxDual):
         """
 
         list_nodes = list(G_aux.nodes())
-        points_G = [G_aux.nodes[n]['pos'] for i, n in enumerate(G_aux.nodes())]
 
         G = nx.Graph()
         counter_e = 0
         counter_n = 0
-        for i, n in enumerate(G_aux.nodes()) :
+        for i, n in enumerate(G_aux.nodes()):
             G.add_node(n, pos=G_aux.nodes[n]['pos'], label=counter_n)
             counter_n += 1
 
@@ -654,13 +714,15 @@ class NetworkxDualLaves(NetworkxDual):
 
                 if dist == self.lattice_constant:
                     options = {
-                    # 'slope': (G_aux.nodes[n]['pos'], G_aux.nodes[m]['pos']),
-                    'label': counter_e
+                        # 'slope': (G_aux.nodes[n]['pos'],
+                        # G_aux.nodes[m]['pos']),
+                        'label': counter_e
                     }
                     G.add_edge(n, m, **options)
                     counter_e += 1
 
         return G
+
 
 class NetworkxDualCatenation(NetworkxDual):
 
@@ -670,15 +732,17 @@ class NetworkxDualCatenation(NetworkxDual):
     Attributes
     ----------
 
-        layer (list): List of the mutlilayered circuits.
-        lattice_constant (float): Scale for the spacing between the networks.
+        layer (list):\n
+            List of the mutlilayered circuits.
+        lattice_constant (float):\n
+            Scale for the spacing between the networks.
 
     """
     def __init__(self, num_periods):
 
         """
-        A constructor for multilayer circuit catenation objects, setting default values
-         for the interal graph objects and geometry
+        A constructor for multilayer circuit catenation objects, setting
+        default values for the interal graph objects and geometry.
         """
 
         super(NetworkxDualCatenation, self).__init__()
@@ -692,7 +756,8 @@ class NetworkxDualCatenation(NetworkxDual):
         Set internal networkx structure, dual ladder.
 
         Args:
-            num_periods (int): Repetition number of the unit tile.
+            num_periods (int):\n
+                Repetition number of the unit tile.
 
         """
 
@@ -704,18 +769,23 @@ class NetworkxDualCatenation(NetworkxDual):
         G1, G2 = [nx.Graph(ic(i).G) for i in N]
 
         theta = np.pi/2.
-        rot_mat = np.array(((1, 0, 0), (0, np.cos(theta), -np.sin(theta)),
-               (0, np.sin(theta), np.cos(theta)) ))
+        rot_mat = np.array(
+                (
+                    (1, 0, 0),
+                    (0, np.cos(theta), -np.sin(theta)),
+                    (0, np.sin(theta), np.cos(theta))
+                )
+        )
 
         for n in G1.nodes():
             p = np.array(G1.nodes[n]['pos'])
             p1 = np.dot(rot_mat, p)
-            p2 = np.add([0.5, 0.5, -0.5], p1 )
+            p2 = np.add([0.5, 0.5, -0.5], p1)
 
             G1.nodes[n]['pos'] = self.lattice_constant*p2
 
+        self.layer = [G1, G2]
 
-        self.layer = [G1,G2]
 
 class NetworkxDualCrossMesh(NetworkxDual):
 
@@ -725,15 +795,17 @@ class NetworkxDualCrossMesh(NetworkxDual):
     Attributes
     ----------
 
-        layer (list): List of the mutlilayered circuits.
-        lattice_constant (float): Scale for the spacing between the networks.
+        layer (list):\n
+            List of the mutlilayered circuits.
+        lattice_constant (float):\n
+            Scale for the spacing between the networks.
 
     """
     def __init__(self, num_periods):
 
         """
-        A constructor for multilayer circuit catenation objects, setting default values
-         for the interal graph objects and geometry
+        A constructor for multilayer circuit catenation objects, setting
+        default values for the interal graph objects and geometry
         """
 
         super(NetworkxDualCrossMesh, self).__init__()
@@ -741,16 +813,17 @@ class NetworkxDualCrossMesh(NetworkxDual):
         self.translation_length = 1
         self.dualCrossMesh(num_periods)
 
-    def dualCrossMesh(self, num_periods):
+    def dualCrossMesh(self, n_periods):
 
         """
         Set internal networkx structure, dual crossed_mesh.
 
         Args:
-            num_periods (int): Repetition number of the unit tile.
+            num_periods (int):\n
+                Repetition number of the unit tile.
 
         """
-        num_periods1X, num_periods1Y, num_periods2X, num_periods2Y =num_periods
+        num_periods1X, num_periods1Y, num_periods2X, num_periods2Y = n_periods
 
         np1 = [num_periods1X, num_periods1Y]
         np2 = [num_periods2X, num_periods2Y]
@@ -760,14 +833,19 @@ class NetworkxDualCrossMesh(NetworkxDual):
         G1, G2 = [nx.Graph(ic(i).G) for i in N]
 
         theta = np.pi/2.
-        rot_mat = np.array(((1, 0, 0), (0, np.cos(theta), -np.sin(theta)),
-               (0, np.sin(theta), np.cos(theta)) ))
+        rot_mat = np.array(
+            (
+                (1, 0, 0),
+                (0, np.cos(theta), -np.sin(theta)),
+                (0, np.sin(theta), np.cos(theta))
+                )
+            )
 
         for n in G1.nodes():
             p = np.array(G1.nodes[n]['pos'])
             p1 = np.dot(rot_mat, p)
-            p2 = np.add([0.5, 0.5, -0.5], p1 )
+            p2 = np.add([0.5, 0.5, -0.5], p1)
 
             G1.nodes[n]['pos'] = self.lattice_constant*p2
 
-        self.layer = [G1,G2]
+        self.layer = [G1, G2]

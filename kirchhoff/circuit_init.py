@@ -1,10 +1,9 @@
-# @Author:  Felix Kramer <kramer>
-# @Date:   2021-05-08T20:34:30+02:00
-# @Email:  kramer@mpi-cbg.de
-# @Project: go-with-the-flow
-# @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-07T11:56:14+01:00
-# @License: MIT
+# @Author: Felix Kramer <kramer>
+# @Date:   24-02-2022
+# @Email:  felixuwekramer@proton.me
+# @Last modified by:   kramer
+# @Last modified time: 08-07-2022
+
 
 # standard types
 import networkx as nx
@@ -25,10 +24,12 @@ def initialize_circuit_from_crystal(crystal_type='default', periods=1):
     Initialize a kirchhoff circuit from a custom crystal type.
 
     Args:
-        input_graph (nx.Graph): A simple networkx graph.
+        input_graph (nx.Graph):\n
+            A simple networkx graph.
 
     Returns:
-        circuit: A kirchhoff graph.
+        circuit:\n
+            A kirchhoff graph.
 
     """
     input_graph = init_crystal.init_graph_from_crystal(crystal_type, periods)
@@ -37,24 +38,37 @@ def initialize_circuit_from_crystal(crystal_type='default', periods=1):
 
     return kirchhoff_graph
 
-def initialize_circuit_from_random(random_type='default', periods=10, sidelength=1):
+
+def initialize_circuit_from_random(
+        random_type='default',
+        periods=10,
+        sidelength=1
+        ):
 
     """
-    Initialize a kirchhoff circuit from a random graph (voronoi tesselation of random points).
+    Initialize a kirchhoff circuit from a random graph (voronoi tesselation of
+    random points).
 
     Args:
-        input_graph (nx.Graph): A simple networkx graph.
+        input_graph (nx.Graph):\n
+            A simple networkx graph.
 
     Returns:
-        circuit: A kirchhoff graph.
+        circuit:\n
+            A kirchhoff graph.
 
     """
 
-    input_graph = init_random.init_graph_from_random(random_type, periods, sidelength)
+    input_graph = init_random.init_graph_from_random(
+            random_type,
+            periods,
+            sidelength
+            )
     kirchhoff_graph = Circuit(input_graph)
     kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, random_type)
 
     return kirchhoff_graph
+
 
 @dataclass
 class Circuit:
@@ -64,11 +78,16 @@ class Circuit:
 
     Attributes
     ----------
-        scales (dictionary): A dictionary holding the unit system.
-        graph (dictionary): A dictionary holding circuit initial conditions.
-        nodes (pd.DataFrame): A container for node data.
-        edges (pd.DataFrame): A container for edge data.
-        draw_weight_scaling (float): Standard wights for drawing.
+        scales (dictionary):\n
+            A dictionary holding the unit system.
+        graph (dictionary):\n
+            A dictionary holding circuit initial conditions.
+        nodes (pd.DataFrame):\n
+            A container for node data.
+        edges (pd.DataFrame):\n
+            A container for edge data.
+        draw_weight_scaling (float):\n
+            Standard wights for drawing.
 
     """
 
@@ -76,8 +95,16 @@ class Circuit:
     info: str = 'unknown'
     scales: dict = field(default_factory=dict, repr=False, init=False)
     graph: dict = field(default_factory=dict, repr=False, init=False)
-    nodes: pd.DataFrame = field(default_factory=pd.DataFrame, repr=False, init=False)
-    edges: pd.DataFrame = field(default_factory=pd.DataFrame, repr=False, init=False)
+    nodes: pd.DataFrame = field(
+                            default_factory=pd.DataFrame,
+                            repr=False,
+                            init=False
+                        )
+    edges: pd.DataFrame = field(
+                            default_factory=pd.DataFrame,
+                            repr=False,
+                            init=False
+                        )
 
     def __post_init__(self):
 
@@ -103,17 +130,15 @@ class Circuit:
 
     def init_circuit(self):
 
-        e = nx.number_of_edges(self.G)
-        n = nx.number_of_nodes(self.G)
         self.info = self.set_info(self.G, 'custom')
 
-        self.scales={
+        self.scales = {
                 'conductance': 1,
                 'flow': 1,
                 'length': 1
             }
 
-        self.graph={
+        self.graph = {
             'source_mode': '',
             'plexus_mode': '',
             'threshold': 0.001,
@@ -121,19 +146,19 @@ class Circuit:
         }
 
         self.nodes = pd.DataFrame(
-        {
-            'source':[],
-            'potential':[],
-            'label':[],
-        }
+            {
+                'source': [],
+                'potential': [],
+                'label': [],
+            }
         )
 
         self.edges = pd.DataFrame(
-        {
-            'conductivity': [],
-            'flow_rate': [],
-            'label': [],
-        }
+            {
+                'conductivity': [],
+                'flow_rate': [],
+                'label': [],
+            }
         )
         self.set_graph_containers()
         self.default_init()
@@ -147,7 +172,7 @@ class Circuit:
         """
         self.draw_weight_scaling = 1.
 
-        options={
+        options = {
             'first_label': 0,
             'ordering': 'default'
             }
@@ -157,11 +182,11 @@ class Circuit:
         self.list_graph_nodes = list(self.G.nodes())
         self.list_graph_edges = list(self.G.edges())
 
-        init_val = ['#269ab3',0,0,5]
+        init_val = ['#269ab3', 0, 0, 5]
         init_attributes = ['color', 'source', 'potential', 'conductivity']
 
         for i, val in enumerate(init_val):
-            nx.set_node_attributes(self.G, val , name=init_attributes[i])
+            nx.set_node_attributes(self.G, val, name=init_attributes[i])
 
         E = self.G.number_of_edges()
         N = self.G.number_of_nodes()
@@ -178,15 +203,16 @@ class Circuit:
             else:
                 self.edges[k] = np.zeros(E)
 
-    #get incidence atrix and its transpose
     def get_incidence_matrices(self):
 
         """
         Get the incidence matrices from the internal graph objects.
 
         Returns:
-            ndarray: A internal circuit graph's incidence matrix.
-            ndarray.T: A internal circuit graph's incidence matrix, transposed.
+            ndarray:\n
+                A internal circuit graph's incidence matrix.
+            ndarray.T:\n
+                A internal circuit graph's incidence matrix, transposed.
 
         """
 
@@ -207,12 +233,12 @@ class Circuit:
         Set the internal DataFrames with the current graph state.
         """
 
-        #set potential node values
+        # set potential node values
         for i, n in enumerate(self.list_graph_nodes):
 
             self.G.nodes[n]['potential'] = self.nodes['potential'][i]
             self.G.nodes[n]['label'] = i
-        #set conductivity matrix
+        # set conductivity matrix
         for j, e in enumerate(self.list_graph_edges):
             self.G.edges[e]['conductivity'] = self.edges['conductivity'][j]
             self.G.edges[e]['label'] = j
@@ -226,8 +252,8 @@ class Circuit:
 
         """
 
-        #cut out edges which lie beneath a certain threshold value and export
-         # this clipped structure
+        # cut out edges which lie beneath a certain threshold value and export
+        # this clipped structure
         self.set_network_attributes()
         self.threshold = 0.01
 
@@ -250,15 +276,18 @@ class Circuit:
         self.H_C = np.asarray(self.H_C)
         self.H_J = np.asarray(self.H_J)
 
-        assert( len(list(self.H.nodes())) == 0)
+        assert(len(list(self.H.nodes())) == 0)
 
     def calc_root_incidence(self):
+
         """
         Find the incidence for a system with binary-type periphehal nodes.
 
         Returns:
-            list: A list of nodes adjacent to the source.
-            list: A list of nodes adjacent to the sink.
+            list:\n
+                A list of nodes adjacent to the source.
+            list:\n
+                A list of nodes adjacent to the sink.
 
         """
 
@@ -266,9 +295,9 @@ class Circuit:
         sink = 0
 
         for i, n in enumerate(self.list_graph_nodes):
-            if self.G.nodes[n]['source'] >  0:
+            if self.G.nodes[n]['source'] > 0:
                 root = n
-            if K.G.nodes[n]['source'] <  0:
+            if self.G.nodes[n]['source'] < 0:
                 sink = n
 
         E_1 = list(self.G.edges(root))
@@ -291,6 +320,7 @@ class Circuit:
 
     # test consistency of conductancies & sources
     def test_source_consistency(self):
+
         """
         Test whether boundaries conditions for sources on the internal graph
         variable are consistenly set.
@@ -321,7 +351,7 @@ class Circuit:
         K = nx.get_edge_attributes(self.G, 'conductivity').values()
         conductivities = np.fromiter(K, float)
 
-        assert(len(np.where(conductivities <=0 )[0]) == 0)
+        assert(len(np.where(conductivities <= 0)[0]) == 0)
 
         A1 = 'set_plexus_landscape(): '
         A2 = ' is set and consistent :)'
@@ -332,7 +362,9 @@ class Circuit:
         Getting positions of the vertices from the internal graphs.
 
         Returns:
-            dictionary: A dictionary holding nodes and their positions in euclidean space
+            dictionary:\n
+                A dictionary holding nodes and their positions in euclidean
+                space.
 
         """
 
@@ -349,13 +381,14 @@ class Circuit:
 
         return pos
 
-    def set_pos(self,pos_data={}):
+    def set_pos(self, pos_data={}):
 
         """
         Set the postions of the internal graph.
 
         Args:
-            pos_data (dictionary): A dictionary of nodal positions.
+            pos_data (dictionary):\n
+                A dictionary of nodal positions.
 
         """
 
@@ -380,31 +413,37 @@ class Circuit:
         Set a new internal unit system.
 
         Args:
-            new_parameters (dictionary): A new set of units to bet set.
+            new_parameters (dictionary):\n
+                A new set of units to bet set.
 
         """
 
-        self.scales=new_parameters
+        self.scales = new_parameters
 
     def set_graph_pars(self, new_parameters):
         """
         Set a circuit boundary conditions.
 
         Args:
-            new_parameters (dictionary): A new set of conditions to bet set.
+            new_parameters (dictionary):\n
+                A new set of conditions to bet set.
 
         """
-        self.graph=new_parameters
+        self.graph = new_parameters
 
     # output
     def plot_circuit(self, *args, **kwargs):
 
         """
         Use Plotly.GraphObjects to create interactive plots that have
-         optionally the graph atributes displayed.
+        optionally the graph atributes displayed.
+
         Args:
-            args (list): A list of keywords for the internal edge and nodal DataFrames which are to be displayed.
-            kwargs (dictionary): A dictionary for plotly keywords customizing the plots' layout.
+            args (list):\n
+                A list of keywords for the internal edge and nodal DataFrames
+                which are to be displayed.
+            kwargs (dictionary):\n
+                A dictionary for plotly keywords customizing the plots' layout.
 
         Returns:
             GraphObject.Figure: A plotly figure displaying the circuit.
@@ -415,14 +454,14 @@ class Circuit:
         E = self.get_edges_data(*args)
         V = self.get_nodes_data(*args)
 
-        options={
+        options = {
             'edge_list': self.list_graph_edges,
             'node_list': self.list_graph_nodes,
             'edge_data': E,
             'node_data': V
         }
 
-        if type(kwargs) != None:
+        if type(kwargs) is not None:
             options.update(kwargs)
 
         fig = dx.plot_networkx(self.G, **options)
@@ -434,7 +473,8 @@ class Circuit:
         Get internal nodal DataFrame columns by keywords.
 
         Args:
-            args (list): A list of keywords to check for in the internal DataFrames.
+            args (list):\n
+                A list of keywords to check for in the internal DataFrames.
 
         Returns:
             pd.DataFrame: A cliced DataFrame.
@@ -451,13 +491,14 @@ class Circuit:
 
         return dn
 
-    def get_edges_data(self, *args ):
+    def get_edges_data(self, *args):
 
         """
         Get internal nodal DataFrame columns by keywords.
 
         Args:
-            args (list): A list of keywords to check for in the internal DataFrames.
+            args (list):\n
+                A list of keywords to check for in the internal DataFrames.
 
         Returns:
             pd.DataFrame: A cliced DataFrame.

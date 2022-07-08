@@ -1,50 +1,65 @@
-# @Author:  Felix Kramer <kramer>
-# @Date:   2021-05-08T20:35:25+02:00
-# @Email:  kramer@mpi-cbg.de
-# @Project: go-with-the-flow
-# @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-07T15:37:53+01:00
-# @License: MIT
+# @Author: Felix Kramer <kramer>
+# @Date:   07-11-2021
+# @Email:  felixuwekramer@proton.me
+# @Last modified by:   kramer
+# @Last modified time: 08-07-2022
 
-import random as rd
-import networkx as nx
+
 import numpy as np
 import sys
 import pandas as pd
-from dataclasses import dataclass, field
-from kirchhoff.circuit_flow import *
+from dataclasses import dataclass
+from kirchhoff.circuit_flow import FlowCircuit
 import kirchhoff.init_crystal as init_crystal
 import kirchhoff.init_random as init_random
 
-def initialize_flux_circuit_from_random(random_type='default', periods=10, sidelength=1):
+
+def initialize_flux_circuit_from_random(
+        random_type='default',
+        periods=10,
+        sidelength=1
+        ):
 
     """
     Initialize a flux circuit from a random, spatially embedded networkx graph.
 
     Args:
-        random_type (string): The type of random lattice to be constructed(voronoi_planar, voronoi_volume).
-        periods (int): Number of random points.
-        sidelength (float): The box size into which random points in space are generated.
+        random_type (string):\n
+            The type of random lattice to be constructed(voronoi_planar,
+            voronoi_volume).
+        periods (int):\n
+            Number of random points.
+        sidelength (float):\n
+            The box size into which random points in space are generated.
 
     Returns:
         flux_circuit: A flux_circuit object.
 
     """
 
-    input_graph = init_random.init_graph_from_random(random_type, periods, sidelength)
+    input_graph = init_random.init_graph_from_random(
+            random_type,
+            periods,
+            sidelength
+            )
     kirchhoff_graph = FluxCircuit(input_graph)
     kirchhoff_graph.info = kirchhoff_graph.set_info(input_graph, random_type)
 
     return kirchhoff_graph
 
+
 def initialize_flux_circuit_from_crystal(crystal_type='default', periods=1):
 
     """
-    Initialize a flux circuit from a spatially embedded, crystal networkx graph.
+    Initialize a flux circuit from a spatially embedded, crystal networkx
+    graph.
 
     Args:
-        crystal_type (string): The type of crystal skeleton (default, simple, chain, bcc, fcc, diamond, laves, square, hexagonal, trigonal_planar).
-        periods (int): Repetition number of the lattice's unit cell.
+        crystal_type (string):\n
+            The type of crystal skeleton (default, simple, chain, bcc, fcc,
+            diamond, laves, square, hexagonal, trigonal_planar).
+        periods (int):\n
+            Repetition number of the lattice's unit cell.
 
     Returns:
         flux_circuit: A flux_circuit object.
@@ -57,22 +72,26 @@ def initialize_flux_circuit_from_crystal(crystal_type='default', periods=1):
 
     return kirchhoff_graph
 
+
 def setup_default_flux_circuit(skeleton=None, diffusion=None, absorption=None):
 
     """
     Initialize a flux circuit from a given networkx graph.
 
     Args:
-        skeleton (nx.Graph): A networkx graph.
-        diffusion (float): Diffusion constant.
-        absorption (float): Absorption rate.
+        skeleton (nx.Graph):\n
+            A networkx graph.
+        diffusion (float):\n
+            Diffusion constant.
+        absorption (float):\n
+            Absorption rate.
 
     Returns:
         flux_circuit: A flow_circuit object.
 
     """
 
-    kirchhoff_graph = initialize_flux_circuit_from_networkx(skeleton)
+    kirchhoff_graph = FluxCircuit(skeleton)
     kirchhoff_graph.set_source_landscape(mode='dipole_point')
     kirchhoff_graph.set_plexus_landscape()
     kirchhoff_graph.set_solute_landscape()
@@ -83,9 +102,11 @@ def setup_default_flux_circuit(skeleton=None, diffusion=None, absorption=None):
     kirchhoff_graph.set_geom_landscape()
 
     idx = np.where(kirchhoff_graph.nodes['solute'] > 0.)[0]
-    kirchhoff_graph.scales['sum_flux'] = np.sum(kirchhoff_graph.nodes['solute'][idx])
+    sol = kirchhoff_graph.nodes['solute'][idx]
+    kirchhoff_graph.scales['sum_flux'] = np.sum(sol)
 
     return kirchhoff_graph
+
 
 @dataclass
 class FluxCircuit(FlowCircuit):
@@ -96,9 +117,12 @@ class FluxCircuit(FlowCircuit):
     Attributes
     ----------
 
-        solute_mode (dictionary): A dictionary of custom solute outflux/influx boundaries.
-        absorption_mode (dictionary): A dictionary of custom absorption rate initializations.
-        geom_mode (dictionary): A dictionary of custom plexus geometrical initializations.
+        solute_mode (dictionary):\n
+            A dictionary of custom solute outflux/influx boundaries.
+        absorption_mode (dictionary):\n
+            A dictionary of custom absorption rate initializations.
+        geom_mode (dictionary):\n
+            A dictionary of custom plexus geometrical initializations.
 
     """
 
@@ -110,11 +134,18 @@ class FluxCircuit(FlowCircuit):
         e = self.G.number_of_edges()
         n = self.G.number_of_nodes()
 
-        newNodeAttr = ['solute','concentration']
+        newNodeAttr = ['solute', 'concentration']
         for k in newNodeAttr:
             self.nodes[k] = np.zeros(n)
 
-        newEdgeAttr = ['peclet','absorption','length','radius','radius_sq','uptake']
+        newEdgeAttr = [
+            'peclet',
+            'absorption',
+            'length',
+            'radius',
+            'radius_sq',
+            'uptake'
+            ]
         for k in newEdgeAttr:
             self.edges[k] = np.zeros(e)
 
@@ -122,7 +153,12 @@ class FluxCircuit(FlowCircuit):
         for k in newScaleAttr:
             self.scales.update({k: 1})
 
-        newGraphAttr = ['solute_mode','absorption_mode', 'geom_mode']
+        newGraphAttr = [
+            'solute_mode',
+            'absorption_mode',
+            'geom_mode'
+            ]
+
         for k in newGraphAttr:
             self.graph.update({k: ''})
 
@@ -138,9 +174,9 @@ class FluxCircuit(FlowCircuit):
         }
 
         self.geom_mode = {
-            'default':self.init_geom_default,
-            'random':self.init_geom_random,
-            'custom':self.init_geom_custom
+            'default': self.init_geom_default,
+            'random': self.init_geom_random,
+            'custom': self.init_geom_custom
         }
 
     # set injection and outlet of metabolites
@@ -150,8 +186,10 @@ class FluxCircuit(FlowCircuit):
         Set the internal bounday state of sinks and sources.
 
         Args:
-            mode (string): The specific solute mode.
-            kwargs (dictonary): Solute attribute specifiers, optional.
+            mode (string):\n
+                The specific solute mode.
+            kwargs (dictonary):\n
+                Solute attribute specifiers, optional.
 
         """
 
@@ -164,8 +202,10 @@ class FluxCircuit(FlowCircuit):
 
             self.solute_mode[mode]()
 
-        else :
-            sys.exit('Whooops, Error: Define Input/output-flows for the network.')
+        else:
+            sys.exit(
+                'Whooops, Error: Define Input/output-flows for the network.'
+                )
 
         self.graph['solute_mode'] = mode
 
@@ -199,12 +239,14 @@ class FluxCircuit(FlowCircuit):
             for j, node in enumerate(self.list_graph_nodes):
 
                 f = self.custom[node]*self.scales['flux']
-                self.nodes.at[j,'solute'] = f
+                self.nodes.at[j, 'solute'] = f
                 self.G.nodes[node]['solute'] = f
 
         else:
 
-            print('Warning, custom solute values ill defined, setting default!')
+            print(
+                'Warning, custom solute values ill defined, setting default!'
+                )
             self.init_solute_default()
 
     def set_solute(self, idx, nodes, vals):
@@ -229,14 +271,16 @@ class FluxCircuit(FlowCircuit):
         Set the internal bounday state of sinks and sources.
 
         Args:
-            mode (string): The specific absorption mode.
-            kwargs (dictonary): Absorption attribute specifiers, optional.
+            mode (string):\n
+                The specific absorption mode.
+            kwargs (dictonary):\n
+                Absorption attribute specifiers, optional.
 
         """
 
         # optional keywords
         if 'absorption' in kwargs:
-            self.custom =  kwargs['absorption']
+            self.custom = kwargs['absorption']
 
         # call init sources
         if mode in self.absorption_mode.keys():
@@ -244,7 +288,11 @@ class FluxCircuit(FlowCircuit):
             self.absorption_mode[mode]()
 
         else:
-            sys.exit('Whooops,  Error: Define absorption rate pattern for the network.')
+            sys.exit(
+                '''
+                Whooops, Error: Define absorption rate pattern for the network.
+                '''
+                )
 
         self.graph['absorption_mode'] = mode
 
@@ -262,7 +310,8 @@ class FluxCircuit(FlowCircuit):
         """
 
         num_e = self.G.number_of_edges()
-        self.edges['absorption'] = np.random.rand(num_e)*self.scales['absorption']
+        rnd = np.random.rand(num_e)
+        self.edges['absorption'] = rnd*self.scales['absorption']
 
     def init_absorption_custom(self):
 
@@ -277,7 +326,11 @@ class FluxCircuit(FlowCircuit):
                 self.edges['absorption'][j] = c
         else:
 
-            print('Warning, custom absorption values ill defined, setting default !')
+            print(
+                '''
+                Warning, custom absorption values ill defined, setting default!
+                '''
+                )
             self.init_absorption_default()
 
     # set spatial pattern of length and radii
@@ -287,8 +340,10 @@ class FluxCircuit(FlowCircuit):
         Set the internal bounday state of sinks and sources.
 
         Args:
-            mode (string): The specific geometric initialization mode.
-            kwargs (dictonary): Geometric initialization specifiers, optional.
+            mode (string):\n
+                The specific geometric initialization mode.
+            kwargs (dictonary):\n
+                Geometric initialization specifiers, optional.
 
         """
 
@@ -301,8 +356,10 @@ class FluxCircuit(FlowCircuit):
 
             self.geom_mode[mode]()
 
-        else :
-            sys.exit('Whooops,  Error: Define micro geometrics for the network.')
+        else:
+            sys.exit(
+                'Whooops, Error: Define micro geometrics for the network.'
+                )
 
         self.graph['geom_mode'] = mode
 
@@ -340,8 +397,11 @@ class FluxCircuit(FlowCircuit):
                 c = self.custom[edge]*self.scales['length']
                 self.edges['length'][j] = c
         else:
-
-            print('Warning,  custom absorption values ill defined,  setting default !')
+            print(
+                '''
+                Warning, custom absorption values ill defined, setting default!
+                '''
+                )
             self.init_geom_default()
 
     def get_nodes_data(self):
@@ -350,7 +410,8 @@ class FluxCircuit(FlowCircuit):
         Get internal nodal DataFrame columns by keywords.
 
         Args:
-            args (list): A list of keywords to check for in the internal DataFrames.
+            args (list):\n
+                A list of keywords to check for in the internal DataFrames.
 
         Returns:
             pd.DataFrame: A cliced DataFrame.
@@ -370,7 +431,8 @@ class FluxCircuit(FlowCircuit):
         Get internal nodal DataFrame columns by keywords.
 
         Args:
-            args (list): A list of keywords to check for in the internal DataFrames.
+            args (list):\n
+                A list of keywords to check for in the internal DataFrames.
 
         Returns:
             pd.DataFrame: A cliced DataFrame.
@@ -380,8 +442,18 @@ class FluxCircuit(FlowCircuit):
 
         """
 
-        de = pd.DataFrame(self.edges[['conductivity', 'flow_rate', 'absorption',
-         'uptake', 'peclet', 'length']])
+        de = pd.DataFrame(
+            self.edges[
+                [
+                    'conductivity',
+                    'flow_rate',
+                    'absorption',
+                    'uptake',
+                    'peclet',
+                    'length'
+                    ]
+                ]
+            )
 
         if 'width' in kwargs:
             w = np.absolute(self.edges[kwargs['width']].to_numpy())
