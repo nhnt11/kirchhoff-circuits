@@ -20,7 +20,7 @@ kid.initialize_dual_flux_circuit_from_minsurf('simple',3)
 ```
 
 Single and dual networks are supported at the moment, and can be constructed from networkx generator or custom pre-defined types of spatially embedded graphs such as  
-- crystals/periodic, initialize_circuit_from_crystal(crystal_type='default',periods=1): 'default': simple cubic lattice 3D, 'chain': 1D chain, 'bcc': bcc lattice 3D,  'fcc': fcc lattice 3D,'diamond': diamond lattice 3D,'laves': laves lattice 3D,'trigonal_stack': trigonal lattice stacked and interconnected 3D, 'square': simple cubic lattice 2D, 'hexagonal': hexagonal lattice 2D,'trigonal_planar': trigonal lattice 2D
+- crystals/periodic, initialize_circuit_from_crystal(crystal_type='default',periods=1): 'default': simple cubic lattice 3D, 'chain': 1D chain, 'bcc': bcc lattice 3D,  'fcc': fcc lattice 3D,'diamond': diamond lattice 3D,'laves': laves lattice 3D,'triagonal_stack': triagonal lattice stacked and interconnected 3D, 'square': simple cubic lattice 2D, 'hexagonal': hexagonal lattice 2D,'triagonal_planar': triagonal lattice 2D
 -  random voronoi tesselation, initialize_circuit_from_random(random_type='default',periods=10,sidelength=1):  'default': planar voronoi tesselation with periodic boundaries,  'voronoi_volume': 3D voronoi tesselation with periodic boundaries
 -   intertwined systems, initialize_dual_circuit_from_minsurf(dual_type='simple',num_periods=2): supporting most of the above in 3D
 
