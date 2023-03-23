@@ -2,8 +2,8 @@
 # @Date:   2021-11-06T16:28:24+01:00
 # @Email:  kramer@mpi-cbg.de
 # @Project: go-with-the-flow
-# @Last modified by:    Felix Kramer
-# @Last modified time: 2021-11-07T12:53:24+01:00
+# @Last modified by:   kramer
+# @Last modified time: 26-07-2022
 # @License: MIT
 import networkx as nx
 import numpy as np
@@ -74,7 +74,7 @@ def test_circuit_dual():
 
     print('test from networkx')
     n=3
-    G=nx.grid_graph(( n,n,1))
+    G=nx.grid_graph((n,n,1))
 
     for k, constr in circuitConstructor.items():
 
