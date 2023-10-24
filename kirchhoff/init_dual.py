@@ -844,7 +844,7 @@ class NetworkxDualCrossMesh(NetworkxDual):
         for n in G1.nodes():
             p = np.array(G1.nodes[n]['pos'])
             p1 = np.dot(rot_mat, p)
-            p2 = np.add([0.5, 0.5, -0.5], p1)
+            p2 = np.add([0.5, 2.5, -2.5], p1)
 
             G1.nodes[n]['pos'] = self.lattice_constant*p2
 
